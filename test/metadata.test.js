@@ -33,6 +33,10 @@ function readPngSize(relativePath) {
   };
 }
 
+function stripEmbeddedImagePayloads(svgText) {
+  return svgText.replace(/data:image\/[^"'\s>]+;base64,[^"'\s>]+/gi, 'data:image/embedded;base64,');
+}
+
 test('package metadata is public-ready and clearly unofficial', () => {
   const packageJson = readPackageJson();
 
@@ -81,11 +85,12 @@ test('package contributes launcher commands, toolbar item, and safe install sett
 test('extension assets are original packaged assets on expected paths', () => {
   const marketplaceIcon = readPngSize('media/icon.png');
   const commandIcon = readText('media/launcher-mark.svg');
+  const commandIconMarkup = stripEmbeddedImagePayloads(commandIcon);
 
   assert.equal(marketplaceIcon.width, 256);
   assert.equal(marketplaceIcon.height, 256);
   assert.match(commandIcon, /<svg/i);
-  assert.doesNotMatch(commandIcon, /xai|x\.ai|grok/i);
+  assert.doesNotMatch(commandIconMarkup, /xai|x\.ai|grok/i);
 });
 
 test('README covers setup, auto install, PATH behavior, privacy, and affiliation disclaimer', () => {

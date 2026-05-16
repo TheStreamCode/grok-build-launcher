@@ -1,0 +1,130 @@
+{
+  "name": "vscode-grok-build-launcher",
+  "displayName": "Grok Build Launcher",
+  "description": "Unofficial VS Code extension that launches Grok Build CLI in a side terminal from the editor toolbar.",
+  "publisher": "mikesoft",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheStreamCode/grok-build-launcher.git"
+  },
+  "author": {
+    "name": "Michael Gasperini",
+    "url": "https://mikesoft.it"
+  },
+  "bugs": {
+    "url": "https://github.com/TheStreamCode/grok-build-launcher/issues"
+  },
+  "homepage": "https://mikesoft.it",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#0B0F19",
+    "theme": "dark"
+  },
+  "pricing": "Free",
+  "engines": {
+    "vscode": "^1.120.0"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Launching Grok Build CLI runs terminal commands in the current workspace. The launcher is disabled until the workspace is trusted.",
+      "restrictedConfigurations": [
+        "grokBuildLauncher.cliCommand"
+      ]
+    }
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "vscode",
+    "extension",
+    "grok",
+    "grok build",
+    "cli",
+    "terminal",
+    "launcher",
+    "toolbar",
+    "ai",
+    "coding agent"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "grokBuildLauncher.openCli",
+        "title": "Open Grok Build in Side Terminal",
+        "category": "Grok Build Launcher",
+        "icon": {
+          "light": "./media/launcher-mark.svg",
+          "dark": "./media/launcher-mark.svg"
+        }
+      },
+      {
+        "command": "grokBuildLauncher.openSettings",
+        "title": "Open Settings",
+        "category": "Grok Build Launcher"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "grokBuildLauncher.openCli",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Grok Build Launcher",
+      "properties": {
+        "grokBuildLauncher.cliCommand": {
+          "type": "string",
+          "scope": "machine",
+          "default": "grok",
+          "markdownDescription": "Command used to start Grok Build CLI. The default is `grok`. On Windows, quote executable paths that contain spaces, for example `\"C:\\Users\\You\\.grok\\bin\\grok.exe\"`."
+        },
+        "grokBuildLauncher.terminalName": {
+          "type": "string",
+          "scope": "window",
+          "default": "Grok Build",
+          "description": "Base name of the terminal used by the launcher."
+        },
+        "grokBuildLauncher.autoInstall": {
+          "type": "boolean",
+          "scope": "machine",
+          "default": true,
+          "description": "Offer to install Grok Build CLI automatically when the default grok command is not found. Installation only starts after explicit confirmation."
+        },
+        "grokBuildLauncher.preferAbsoluteInstalledPath": {
+          "type": "boolean",
+          "scope": "machine",
+          "default": true,
+          "description": "After a successful guided install, update the launcher command to the detected absolute grok executable path so VS Code can launch it even before restart."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node ./node_modules/typescript/bin/tsc -p . --pretty false",
+    "watch": "node ./node_modules/typescript/bin/tsc --watch -p . --pretty false",
+    "test": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js",
+    "test:unit": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js",
+    "test:command-utils": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/command-utils.test.js",
+    "test:install-utils": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/install-utils.test.js",
+    "test:integration": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node ./test/integration/runTest.js",
+    "test:metadata": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/metadata.test.js",
+    "vscode:prepublish": "node ./node_modules/typescript/bin/tsc -p . --pretty false",
+    "package": "node ./node_modules/@vscode/vsce/vsce package",
+    "check": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js && node ./node_modules/@vscode/vsce/vsce ls",
+    "generate:icon": "node ./scripts/generate-icon.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.120.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

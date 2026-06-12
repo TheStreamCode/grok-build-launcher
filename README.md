@@ -1,12 +1,21 @@
 # Grok Build Launcher
 
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/mikesoft.vscode-grok-build-launcher?label=Marketplace&color=6366F1)](https://marketplace.visualstudio.com/items?itemName=mikesoft.vscode-grok-build-launcher)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/mikesoft.vscode-grok-build-launcher?color=0EA5E9)](https://marketplace.visualstudio.com/items?itemName=mikesoft.vscode-grok-build-launcher)
+[![Open VSX](https://img.shields.io/open-vsx/v/mikesoft/vscode-grok-build-launcher?label=Open%20VSX&color=a60ee5)](https://open-vsx.org/extension/mikesoft/vscode-grok-build-launcher)
+[![CI](https://github.com/TheStreamCode/grok-build-launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/grok-build-launcher/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/Sponsor-TheStreamCode-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/TheStreamCode)
+
 Grok Build Launcher is an unofficial VS Code extension that launches Grok Build CLI in a new side terminal directly from the editor toolbar.
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.0`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.1`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
+
+> **✨ Want one launcher for every agent?** Try **[Super CLI](https://marketplace.visualstudio.com/items?itemName=mikesoft.vscode-super-cli)** — a single sidebar that launches Claude Code, Codex, Copilot, Cursor, Grok, Kilo, Antigravity, OpenCode, and more. Install this launcher for Grok alone, or Super CLI for the whole set.
 
 > **Independent project disclaimer**
 > This extension is an independent, unofficial project. It is not affiliated with, endorsed by, sponsored by, or approved by xAI. Grok, Grok Build, xAI, and related names, logos, and trademarks are property of their respective owners. This project does not include official xAI or Grok logos.

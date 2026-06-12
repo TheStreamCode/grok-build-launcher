@@ -41,10 +41,10 @@ test('package metadata is public-ready and clearly unofficial', () => {
   const packageJson = readPackageJson();
 
   assert.equal(packageJson.name, 'vscode-grok-build-launcher');
-  assert.equal(packageJson.displayName, 'Grok Build Launcher');
-  assert.equal(packageJson.description, 'Unofficial VS Code extension that launches Grok Build CLI in a side terminal from the editor toolbar.');
+  assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
+  assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar — one click, fresh terminal, guided install. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.0');
+  assert.equal(packageJson.version, '0.1.1');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');

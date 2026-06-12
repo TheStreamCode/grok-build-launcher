@@ -1,9 +1,9 @@
 {
   "name": "vscode-grok-build-launcher",
-  "displayName": "Grok Build Launcher",
-  "description": "Unofficial VS Code extension that launches Grok Build CLI in a side terminal from the editor toolbar.",
+  "displayName": "Grok Build Launcher — Run Grok CLI in a Side Terminal",
+  "description": "Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar — one click, fresh terminal, guided install. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.",
   "publisher": "mikesoft",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/TheStreamCode/grok-build-launcher.git"
@@ -16,6 +16,9 @@
     "url": "https://github.com/TheStreamCode/grok-build-launcher/issues"
   },
   "homepage": "https://mikesoft.it",
+  "sponsor": {
+    "url": "https://github.com/sponsors/TheStreamCode"
+  },
   "license": "MIT",
   "icon": "media/icon.png",
   "galleryBanner": {
@@ -36,19 +39,23 @@
     }
   },
   "categories": [
+    "AI",
+    "Chat",
     "Other"
   ],
   "keywords": [
-    "vscode",
-    "extension",
     "grok",
     "grok build",
+    "grok cli",
+    "xai",
+    "ai coding agent",
+    "coding agent",
+    "ai agent",
+    "ai",
     "cli",
     "terminal",
     "launcher",
-    "toolbar",
-    "ai",
-    "coding agent"
+    "vscode"
   ],
   "main": "./out/extension.js",
   "contributes": {

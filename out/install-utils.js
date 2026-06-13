@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GROK_INSTALL_URL = void 0;
+exports.GROK_INSTALL_PS1_URL = exports.GROK_INSTALL_URL = void 0;
 exports.buildGrokInstallPromptMessage = buildGrokInstallPromptMessage;
 exports.buildGrokInstallPromptCommand = buildGrokInstallPromptCommand;
 exports.getDefaultGrokBinDir = getDefaultGrokBinDir;
@@ -45,6 +45,8 @@ exports.buildGrokInstallPromptScript = buildGrokInstallPromptScript;
 const path = __importStar(require("node:path"));
 const GROK_INSTALL_URL = 'https://x.ai/cli/install.sh';
 exports.GROK_INSTALL_URL = GROK_INSTALL_URL;
+const GROK_INSTALL_PS1_URL = 'https://x.ai/cli/install.ps1';
+exports.GROK_INSTALL_PS1_URL = GROK_INSTALL_PS1_URL;
 function quoteJavaScriptString(value) {
     return JSON.stringify(value);
 }
@@ -108,15 +110,17 @@ function appendPathEntry(pathValue, directory, delimiter, caseInsensitive) {
     return `${pathValue}${delimiter}${directory}`;
 }
 /** Returns the Node installer script executed inside a visible VS Code terminal after user consent. */
-function buildGrokInstallPromptScript(installUrl = GROK_INSTALL_URL) {
+function buildGrokInstallPromptScript(shellInstallUrl = GROK_INSTALL_URL, windowsInstallUrl = GROK_INSTALL_PS1_URL) {
     const message = quoteJavaScriptString(buildGrokInstallPromptMessage());
-    const url = quoteJavaScriptString(installUrl);
+    const shellUrl = quoteJavaScriptString(shellInstallUrl);
+    const psUrl = quoteJavaScriptString(windowsInstallUrl);
     return String.raw `const cp = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const installUrl = ${url};
+const shellInstallUrl = ${shellUrl};
+const windowsInstallUrl = ${psUrl};
 const binDir = path.join(os.homedir(), '.grok', 'bin');
 const executablePath = path.join(binDir, process.platform === 'win32' ? 'grok.exe' : 'grok');
 
@@ -135,51 +139,14 @@ function run(command, args) {
   });
 }
 
-function commandOutput(command, args) {
-  try {
-    return cp.execFileSync(command, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-  } catch {
-    return '';
-  }
-}
-
-function findWindowsBash() {
-  const candidates = [
-    process.env.GIT_BASH_PATH,
-    process.env.ProgramFiles ? path.join(process.env.ProgramFiles, 'Git\\bin\\bash.exe') : undefined,
-    process.env['ProgramFiles(x86)'] ? path.join(process.env['ProgramFiles(x86)'], 'Git\\bin\\bash.exe') : undefined,
-    process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'Programs\\Git\\bin\\bash.exe') : undefined,
-  ].filter(Boolean);
-
-  for (const candidate of candidates) {
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-
-  const whereResult = commandOutput('where.exe', ['bash.exe'])
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .find((line) => /bash\.exe$/i.test(line));
-
-  return whereResult || '';
-}
-
 async function runOfficialInstaller() {
-  const command = 'curl -fsSL ' + installUrl + ' | bash';
-
   if (process.platform === 'win32') {
-    const bashPath = findWindowsBash();
-    if (!bashPath) {
-      console.error('Git Bash was not found. Install Git for Windows, then run this installer again.');
-      process.exit(1);
-    }
-
-    await run(bashPath, ['-lc', command]);
+    const psCommand = 'irm ' + windowsInstallUrl + ' | iex';
+    await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', psCommand]);
     return;
   }
 
+  const command = 'curl -fsSL ' + shellInstallUrl + ' | bash';
   await run(process.env.SHELL || '/bin/sh', ['-lc', command]);
 }
 

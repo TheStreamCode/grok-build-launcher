@@ -36,7 +36,7 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 
 - VS Code `^1.120.0`
 - Grok Build CLI available in the integrated terminal environment, or guided installation enabled
-- On Windows guided installation requires Git Bash from Git for Windows, because the official xAI installer is a Bash script
+- On Windows guided installation uses the official xAI PowerShell installer — no Git Bash required
 
 ## Installation
 
@@ -60,7 +60,7 @@ If you choose **Install**, the extension opens a visible install terminal and ru
 
 Platform behavior:
 
-- Windows: runs the official installer through Git Bash and adds `%USERPROFILE%\.grok\bin` to the Windows user PATH using the Windows user environment API.
+- Windows: runs the official xAI PowerShell installer (`irm https://x.ai/cli/install.ps1 | iex`) and adds `%USERPROFILE%\.grok\bin` to the Windows user PATH using the Windows user environment API.
 - macOS: runs the official installer through the active shell and ensures `$HOME/.grok/bin` is present in the relevant shell startup files, including `.zshrc` and `.zprofile` for zsh.
 - Linux: runs the official installer through the active shell and ensures `$HOME/.grok/bin` is present in the relevant shell startup file, such as `.bashrc`, `.zshrc`, `.profile`, or fish config.
 
@@ -129,7 +129,7 @@ Install Grok Build CLI with the official xAI installer:
 curl -fsSL https://x.ai/cli/install.sh | bash
 ```
 
-On Windows, install Git for Windows first and make sure Git Bash is available. The guided installer uses Git Bash because the official installer is a Bash script.
+On Windows, the guided installer uses the official xAI PowerShell installer (`irm https://x.ai/cli/install.ps1 | iex`); no Git Bash is required.
 
 If installation succeeds but existing terminals still do not see `grok`, restart VS Code so new terminal processes inherit the updated PATH.
 

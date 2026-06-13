@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.3
+
+### Changed
+
+- **Native Windows guided install.** The guided installer now uses xAI's official PowerShell
+  installer (`irm https://x.ai/cli/install.ps1 | iex`) on Windows instead of requiring Git Bash to
+  run the Bash script. macOS/Linux are unchanged.
+
 ## 0.1.2
 
 ### Changed

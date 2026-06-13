@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 
 const {
   GROK_INSTALL_URL,
+  GROK_INSTALL_PS1_URL,
   buildGrokInstallPromptCommand,
   buildGrokInstallPromptMessage,
   buildGrokInstallPromptScript,
@@ -15,6 +16,10 @@ const {
 
 test('GROK_INSTALL_URL points to the official xAI installer', () => {
   assert.equal(GROK_INSTALL_URL, 'https://x.ai/cli/install.sh');
+});
+
+test('GROK_INSTALL_PS1_URL points to the official xAI Windows installer', () => {
+  assert.equal(GROK_INSTALL_PS1_URL, 'https://x.ai/cli/install.ps1');
 });
 
 test('buildGrokInstallPromptMessage is concise and explicit', () => {
@@ -76,7 +81,9 @@ test('buildGrokInstallPromptScript uses the official installer and configures PA
   const script = buildGrokInstallPromptScript();
 
   assert.match(script, /https:\/\/x\.ai\/cli\/install\.sh/);
-  assert.match(script, /Git\\\\bin\\\\bash\.exe/);
+  // Windows uses the native PowerShell installer (no Git Bash dependency).
+  assert.match(script, /https:\/\/x\.ai\/cli\/install\.ps1/);
+  assert.match(script, /irm.*\| iex/);
   assert.match(script, /SetEnvironmentVariable\('Path'/);
   assert.match(script, /\.zprofile/);
   assert.match(script, /\.bashrc/);

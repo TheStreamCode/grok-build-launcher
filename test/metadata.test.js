@@ -44,12 +44,12 @@ test('package metadata is public-ready and clearly unofficial', () => {
   assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
   assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar — one click, fresh terminal, guided install. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.3');
+  assert.equal(packageJson.version, '0.1.4');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
   assert.equal(packageJson.bugs.url, 'https://github.com/TheStreamCode/grok-build-launcher/issues');
-  assert.equal(packageJson.engines.vscode, '^1.120.0');
+  assert.equal(packageJson.engines.vscode, '^1.93.0');
   assert.deepEqual(packageJson.capabilities.untrustedWorkspaces.restrictedConfigurations, [
     'grokBuildLauncher.cliCommand',
   ]);
@@ -99,7 +99,7 @@ test('README covers setup, auto install, PATH behavior, privacy, and affiliation
   assert.match(readme, /^# Grok Build Launcher$/m);
   assert.match(readme, /unofficial VS Code extension/i);
   assert.match(readme, /https:\/\/github\.com\/TheStreamCode\/grok-build-launcher/);
-  assert.match(readme, /VS Code `\^1\.120\.0`/);
+  assert.match(readme, /VS Code `\^1\.93\.0`/);
   assert.match(readme, /not affiliated with, endorsed by, sponsored by, or approved by xAI/i);
   assert.match(readme, /Grok, Grok Build, xAI, and related names/i);
   assert.match(readme, /## Features/);

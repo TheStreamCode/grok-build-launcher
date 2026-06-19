@@ -11,7 +11,7 @@ Grok Build Launcher is an unofficial VS Code extension that launches Grok Build 
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.1`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.4`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
 
@@ -34,7 +34,7 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 
 ## Requirements
 
-- VS Code `^1.120.0`
+- VS Code `^1.93.0`
 - Grok Build CLI available in the integrated terminal environment, or guided installation enabled
 - On Windows guided installation uses the official xAI PowerShell installer — no Git Bash required
 

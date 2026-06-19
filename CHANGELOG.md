@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.4
+
+### Changed
+
+- Lowered the required VS Code version from `^1.120.0` to `^1.93.0`, the actual floor for the terminal shell integration APIs the launcher uses. This widens compatibility to every VS Code release from 1.93 onward instead of requiring 1.120 or newer.
+
 ## 0.1.3
 
 ### Changed

@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Grok Build Launcher"
+authors:
+  - family-names: Gasperini
+    given-names: Michael
+url: "https://github.com/TheStreamCode/grok-build-launcher"
+version: "0.1.4"
+license: MIT

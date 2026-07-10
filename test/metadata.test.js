@@ -99,7 +99,7 @@ test('README covers setup, auto install, PATH behavior, privacy, and affiliation
   assert.match(readme, /^# Grok Build Launcher$/m);
   assert.match(readme, /unofficial VS Code extension/i);
   assert.match(readme, /https:\/\/github\.com\/TheStreamCode\/grok-build-launcher/);
-  assert.match(readme, /VS Code `\^1\.93\.0`/);
+  assert.match(readme, /VS Code `\^1\.103\.0`/);
   assert.match(readme, /not affiliated with, endorsed by, sponsored by, or approved by xAI/i);
   assert.match(readme, /Grok, Grok Build, xAI, and related names/i);
   assert.match(readme, /## Features/);

@@ -34,7 +34,7 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 
 ## Requirements
 
-- VS Code `^1.93.0`
+- VS Code `^1.103.0`
 - Grok Build CLI available in the integrated terminal environment, or guided installation enabled
 - On Windows guided installation uses the official xAI PowerShell installer — no Git Bash required
 

@@ -11,7 +11,7 @@ Grok Build Launcher is an unofficial VS Code extension that launches Grok Build 
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.6`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.7`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
 
@@ -26,17 +26,16 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 - Opens a fresh side terminal beside the active editor on every launch
 - Uses the active editor workspace when available, with a fallback to the first open workspace folder
 - Runs the configurable Grok Build CLI command, defaulting to `grok`
-- Offers explicit-consent guided installation when the default `grok` command is missing
-- Updates the user PATH or selected shell startup files during guided install
-- Falls back to the absolute installed `grok` executable path after guided install when enabled
+- Shows professional installation guidance when the default `grok` command is missing
+- Opens the verified official xAI installation documentation in the external browser on request
+- Does not download or execute installers or modify PATH and shell profile configuration
 - Supports quoted Windows executable paths
 - Does not collect telemetry, analytics, or personal data
 
 ## Requirements
 
 - VS Code `^1.103.0`
-- Grok Build CLI available in the integrated terminal environment, or guided installation enabled
-- On Windows guided installation uses the official xAI PowerShell installer — no Git Bash required
+- Grok Build CLI available in the integrated terminal environment
 
 ## Installation
 
@@ -46,31 +45,13 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 
 If Grok Build CLI is already installed and `grok` is on PATH, the launcher starts immediately.
 
-Manual Grok Build CLI installation uses the official xAI installer:
+Install Grok Build CLI by following the [official xAI installation documentation](https://docs.x.ai/build/overview).
 
-```bash
-curl -fsSL https://x.ai/cli/install.sh | bash
-```
+## Missing CLI Guidance
 
-## Guided Installation
+When the default `grok` command is unavailable, the extension displays a warning with an **Open Installation Guide** action. Selecting it opens the verified official xAI documentation in the external browser.
 
-When the launcher runs the default `grok` command and the integrated terminal reports that it is missing, the extension asks for explicit confirmation before installing anything.
-
-If you choose **Install**, the extension opens a visible install terminal and runs a generated local Node script. The script visibly invokes the upstream xAI installer, then configures the expected PATH location. It never starts an installation unless you select **Install**.
-
-The upstream installer makes network requests to `x.ai`; its download, authentication, behavior, and applicable xAI terms are outside this extension. Review those terms and the displayed terminal command before consenting.
-
-Platform behavior:
-
-- Windows: runs the upstream PowerShell installer (`irm https://x.ai/cli/install.ps1 | iex`) and adds `%USERPROFILE%\.grok\bin` only to the Windows user PATH. It does not change the system PATH.
-- macOS: runs `curl -fsSL https://x.ai/cli/install.sh | bash` through the configured shell (or `/bin/sh` if none is configured). For zsh it updates `.zshrc` and `.zprofile`; for bash it updates `.bashrc` and `.bash_profile`; for fish it updates `.config/fish/config.fish`; for other shells it updates `.profile`.
-- Linux: runs the same shell installer. For zsh it updates `.zshrc`; for bash it updates `.bashrc`; for fish it updates `.config/fish/config.fish`; for other shells it updates `.profile`.
-
-On macOS and Linux, each startup file is changed only when it does not already contain `.grok/bin`.
-
-After a successful guided install, the extension can update `grokBuildLauncher.cliCommand` to the detected absolute executable path. This makes the launcher work even before VS Code is restarted and before new terminals inherit the updated PATH.
-
-The guided install flow is enabled by default, but it never runs without explicit confirmation.
+The extension does not download or execute installers, run remote scripts, create temporary installation scripts, or modify PATH and shell profile configuration.
 
 ## How It Works
 
@@ -88,10 +69,8 @@ For safety, the launcher is disabled in untrusted workspaces. The executable com
 | --- | --- | --- |
 | `grokBuildLauncher.cliCommand` | `grok` | Command executed when the launcher button is clicked. |
 | `grokBuildLauncher.terminalName` | `Grok Build` | Base label used for created launch terminals. |
-| `grokBuildLauncher.autoInstall` | `true` | Offer guided installation when the default `grok` command is missing. Installation still requires explicit confirmation. |
-| `grokBuildLauncher.preferAbsoluteInstalledPath` | `true` | After guided install, update the launch command to the detected absolute `grok` executable path. |
 
-`grokBuildLauncher.cliCommand`, `grokBuildLauncher.autoInstall`, and `grokBuildLauncher.preferAbsoluteInstalledPath` are machine-level settings. Configure them from your user or remote machine settings, not from repository workspace settings.
+`grokBuildLauncher.cliCommand` is a machine-level setting. Configure it from your user or remote machine settings, not from repository workspace settings.
 
 Use the Command Palette to open the extension settings:
 
@@ -117,29 +96,11 @@ macOS or Linux absolute executable path:
 "grokBuildLauncher.cliCommand": "\"/Users/you/.grok/bin/grok\""
 ```
 
-Disable guided install prompts:
-
-```json
-"grokBuildLauncher.autoInstall": false
-```
-
 ## Troubleshooting
 
 ### The terminal opens but `grok` is not recognized
 
-Install Grok Build CLI with the official xAI installer:
-
-```bash
-curl -fsSL https://x.ai/cli/install.sh | bash
-```
-
-On Windows, the guided installer uses the official xAI PowerShell installer (`irm https://x.ai/cli/install.ps1 | iex`); no Git Bash is required.
-
-If installation succeeds but existing terminals still do not see `grok`, restart VS Code so new terminal processes inherit the updated PATH.
-
-### Windows PATH was updated but PowerShell still cannot find `grok`
-
-Confirm that `%USERPROFILE%\.grok\bin` is present in your user PATH. Restart VS Code and open a new terminal. Existing terminal sessions do not automatically reload Windows user environment changes.
+Use **Open Installation Guide** in the warning, or open the [official xAI installation documentation](https://docs.x.ai/build/overview). After installation, restart VS Code if new integrated terminals do not recognize `grok`.
 
 ### Nothing happens after clicking the button
 

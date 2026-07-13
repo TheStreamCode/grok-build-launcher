@@ -42,9 +42,9 @@ test('package metadata is public-ready and clearly unofficial', () => {
 
   assert.equal(packageJson.name, 'vscode-grok-build-launcher');
   assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
-  assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar — one click, fresh terminal, guided install. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
+  assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.5');
+  assert.equal(packageJson.version, '0.1.7');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
@@ -57,7 +57,7 @@ test('package metadata is public-ready and clearly unofficial', () => {
   assert.ok(packageJson.keywords.includes('coding agent'));
 });
 
-test('package contributes launcher commands, toolbar item, and safe install settings', () => {
+test('package contributes launcher commands, toolbar item, and launch settings', () => {
   const packageJson = readPackageJson();
   const [openCliCommand, openSettingsCommand] = packageJson.contributes.commands;
 
@@ -75,11 +75,8 @@ test('package contributes launcher commands, toolbar item, and safe install sett
   assert.equal(settings['grokBuildLauncher.cliCommand'].default, 'grok');
   assert.equal(settings['grokBuildLauncher.cliCommand'].scope, 'machine');
   assert.equal(settings['grokBuildLauncher.terminalName'].default, 'Grok Build');
-  assert.equal(settings['grokBuildLauncher.autoInstall'].default, true);
-  assert.equal(settings['grokBuildLauncher.autoInstall'].scope, 'machine');
-  assert.equal(settings['grokBuildLauncher.preferAbsoluteInstalledPath'].default, true);
-  assert.equal(settings['grokBuildLauncher.preferAbsoluteInstalledPath'].scope, 'machine');
-  assert.match(settings['grokBuildLauncher.autoInstall'].description, /explicit confirmation/i);
+  assert.equal(settings['grokBuildLauncher.autoInstall'], undefined);
+  assert.equal(settings['grokBuildLauncher.preferAbsoluteInstalledPath'], undefined);
 });
 
 test('extension assets are original packaged assets on expected paths', () => {
@@ -93,7 +90,7 @@ test('extension assets are original packaged assets on expected paths', () => {
   assert.doesNotMatch(commandIconMarkup, /xai|x\.ai|grok/i);
 });
 
-test('README covers setup, auto install, PATH behavior, privacy, and affiliation disclaimer', () => {
+test('README covers setup, missing CLI guidance, privacy, and affiliation disclaimer', () => {
   const readme = readText('README.md');
 
   assert.match(readme, /^# Grok Build Launcher$/m);
@@ -103,13 +100,9 @@ test('README covers setup, auto install, PATH behavior, privacy, and affiliation
   assert.match(readme, /not affiliated with, endorsed by, sponsored by, or approved by xAI/i);
   assert.match(readme, /Grok, Grok Build, xAI, and related names/i);
   assert.match(readme, /## Features/);
-  assert.match(readme, /## Guided Installation/);
-  assert.match(readme, /official xAI installer/);
-  assert.match(readme, /curl -fsSL https:\/\/x\.ai\/cli\/install\.sh \| bash/);
-  assert.match(readme, /install\.ps1/i);
-  assert.match(readme, /%USERPROFILE%\\\.grok\\bin/);
-  assert.match(readme, /\.grok\/bin/);
-  assert.match(readme, /explicit confirmation/i);
+  assert.match(readme, /## Missing CLI Guidance/);
+  assert.match(readme, /https:\/\/docs\.x\.ai\/build\/overview/);
+  assert.match(readme, /does not download or execute installers/i);
   assert.match(readme, /does not collect telemetry, analytics, or personal data/i);
   assert.match(readme, /npm run check/);
 });
@@ -137,6 +130,7 @@ test('package scripts use deterministic local tooling entry points', () => {
   assert.equal(packageJson.scripts.test, 'node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js');
   assert.equal(packageJson.scripts.check, 'node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js && node ./node_modules/@vscode/vsce/vsce ls');
   assert.equal(packageJson.scripts.package, 'node ./node_modules/@vscode/vsce/vsce package');
+  assert.match(packageJson.scripts['vscode:prepublish'], /rmSync\('out'/);
 });
 
 test('ignore rules keep generated, local, and engineering-only files out of artifacts', () => {
@@ -177,6 +171,7 @@ test('changelog documents the initial release scope', () => {
   assert.match(changelog, /^# Changelog$/m);
   assert.match(changelog, /## 0\.1\.0/);
   assert.match(changelog, /Added Grok Build launcher command/);
-  assert.match(changelog, /Added consent-based guided install flow/);
+  assert.match(changelog, /## 0\.1\.7/);
+  assert.match(changelog, /official xAI installation documentation/);
   assert.match(changelog, /Added legal, support, security, and trademark documentation/);
 });

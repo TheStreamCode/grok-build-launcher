@@ -29,12 +29,10 @@ async function run() {
   const configuration = vscode.workspace.getConfiguration('grokBuildLauncher');
   const originalCliCommand = configuration.get('cliCommand');
   const originalTerminalName = configuration.get('terminalName');
-  const originalAutoInstall = configuration.get('autoInstall');
 
   try {
     await configuration.update('cliCommand', 'node --version', vscode.ConfigurationTarget.Global);
     await configuration.update('terminalName', 'Grok Build Test', vscode.ConfigurationTarget.Global);
-    await configuration.update('autoInstall', false, vscode.ConfigurationTarget.Global);
 
     const beforeCount = vscode.window.terminals.length;
     await vscode.commands.executeCommand('grokBuildLauncher.openCli');
@@ -47,7 +45,6 @@ async function run() {
   } finally {
     await configuration.update('cliCommand', originalCliCommand, vscode.ConfigurationTarget.Global);
     await configuration.update('terminalName', originalTerminalName, vscode.ConfigurationTarget.Global);
-    await configuration.update('autoInstall', originalAutoInstall, vscode.ConfigurationTarget.Global);
   }
 }
 

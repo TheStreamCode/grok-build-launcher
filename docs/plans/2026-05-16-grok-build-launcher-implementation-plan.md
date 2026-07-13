@@ -1,8 +1,10 @@
 # Grok Build Launcher Implementation Plan
 
-**Goal:** Build a professional, public-ready VS Code extension that launches Grok Build CLI from the editor toolbar and offers a consent-based guided install flow when `grok` is missing.
+**Status:** Superseded in version 0.1.7 by documentation-only missing CLI guidance.
 
-**Architecture:** Keep the runtime small and testable. `src/extension.ts` owns VS Code command registration and terminal orchestration, while pure command parsing and installer helpers live in `src/command-utils.ts` and `src/install-utils.ts` for unit coverage.
+**Goal:** Build a professional, public-ready VS Code extension that launches Grok Build CLI from the editor toolbar and provides installation guidance when `grok` is missing.
+
+**Architecture:** Keep the runtime small and testable. `src/extension.ts` owns VS Code command registration and terminal orchestration, while pure command parsing and missing CLI detection live in `src/command-utils.ts` for unit coverage.
 
 **Tech Stack:** TypeScript, VS Code Extension API, Node.js built-in test runner, `@vscode/test-electron`, `@vscode/vsce`.
 
@@ -11,9 +13,9 @@
 ## Tasks
 
 - [x] Define package metadata, commands, settings, and toolbar contribution.
-- [x] Write failing unit tests for command parsing, missing CLI detection, installer script generation, default install paths, and PATH entry helpers.
+- [x] Write failing unit tests for command parsing and missing CLI detection.
 - [x] Implement pure helper modules in TypeScript.
-- [x] Implement VS Code activation, launch flow, guided installer terminal, and absolute path fallback.
+- [x] Implement VS Code activation, launch flow, and official documentation guidance.
 - [x] Add integration smoke tests for activation, command registration, launcher terminal creation, and settings command.
 - [x] Add public documentation, trademark disclaimer, support, security, changelog, ignore rules, and CI.
 - [x] Generate original non-affiliated icon assets.

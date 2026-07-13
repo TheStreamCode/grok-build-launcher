@@ -12,6 +12,6 @@ Grok Build Launcher does not collect telemetry, analytics, or personal data.
 
 The extension can launch a user-configured command in the VS Code integrated terminal. Treat `grokBuildLauncher.cliCommand` as trusted local configuration. The extension does not execute that command outside the integrated terminal.
 
-The guided installer runs only after explicit user confirmation. It invokes the official xAI installer URL and updates local PATH configuration so the installed `grok` binary can be found by future terminals.
+When Grok Build CLI is unavailable, the extension displays installation guidance and can open the official xAI documentation in the external browser. It does not download or execute installers, create temporary installation scripts, or modify PATH and shell profile configuration.
 
 Grok Build CLI is a separate third-party product with its own authentication, network behavior, and security model.

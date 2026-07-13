@@ -11,7 +11,7 @@ const {
   normalizeTerminalName,
   resolveCliCommandSetting,
   resolveTerminalCwd,
-  shouldPromptToInstallGrok,
+  shouldShowMissingGrokGuidance,
 } = require('../out/command-utils.js');
 
 test('default command and terminal name match Grok Build branding', () => {
@@ -73,35 +73,35 @@ test('extractExecutable preserves quoted Windows paths with spaces', () => {
   );
 });
 
-test('shouldPromptToInstallGrok detects PowerShell command-not-found output', () => {
+test('shouldShowMissingGrokGuidance detects PowerShell command-not-found output', () => {
   const output = "grok: The term 'grok' is not recognized as a name of a cmdlet, function, script file, or executable program.";
 
-  assert.equal(shouldPromptToInstallGrok('grok', 1, output), true);
+  assert.equal(shouldShowMissingGrokGuidance('grok', 1, output), true);
 });
 
-test('shouldPromptToInstallGrok detects POSIX command-not-found exit codes', () => {
-  assert.equal(shouldPromptToInstallGrok('grok', 127, ''), true);
+test('shouldShowMissingGrokGuidance detects POSIX command-not-found exit codes', () => {
+  assert.equal(shouldShowMissingGrokGuidance('grok', 127, ''), true);
 });
 
-test('shouldPromptToInstallGrok detects missing agent alias as installable', () => {
-  assert.equal(shouldPromptToInstallGrok('agent', 127, ''), true);
+test('shouldShowMissingGrokGuidance detects the missing agent alias', () => {
+  assert.equal(shouldShowMissingGrokGuidance('agent', 127, ''), true);
 });
 
-test('shouldPromptToInstallGrok ignores custom wrapper commands', () => {
-  assert.equal(shouldPromptToInstallGrok('custom-grok-wrapper', 1, 'custom-grok-wrapper: command not found'), false);
+test('shouldShowMissingGrokGuidance ignores custom wrapper commands', () => {
+  assert.equal(shouldShowMissingGrokGuidance('custom-grok-wrapper', 1, 'custom-grok-wrapper: command not found'), false);
 });
 
-test('shouldPromptToInstallGrok ignores unrelated Grok runtime failures', () => {
-  assert.equal(shouldPromptToInstallGrok('grok', 1, 'Error: authentication failed'), false);
-  assert.equal(shouldPromptToInstallGrok('grok', 1, 'Error: model not found'), false);
+test('shouldShowMissingGrokGuidance ignores unrelated Grok runtime failures', () => {
+  assert.equal(shouldShowMissingGrokGuidance('grok', 1, 'Error: authentication failed'), false);
+  assert.equal(shouldShowMissingGrokGuidance('grok', 1, 'Error: model not found'), false);
 });
 
-test('shouldPromptToInstallGrok ignores missing project files from an installed CLI', () => {
-  assert.equal(shouldPromptToInstallGrok('grok', 1, 'Error: no such file or directory, open "/workspace/AGENTS.md"'), false);
+test('shouldShowMissingGrokGuidance ignores missing project files from an installed CLI', () => {
+  assert.equal(shouldShowMissingGrokGuidance('grok', 1, 'Error: no such file or directory, open "/workspace/AGENTS.md"'), false);
 });
 
-test('shouldPromptToInstallGrok ignores non-command-not-found exit codes', () => {
-  assert.equal(shouldPromptToInstallGrok('grok', 2, 'grok: command not found'), false);
+test('shouldShowMissingGrokGuidance ignores non-command-not-found exit codes', () => {
+  assert.equal(shouldShowMissingGrokGuidance('grok', 2, 'grok: command not found'), false);
 });
 
 test('resolveTerminalCwd uses the active editor workspace when available', () => {

@@ -101,8 +101,8 @@ export function extractExecutable(command: string): string {
   return whitespaceIndex === -1 ? normalized : normalized.slice(0, whitespaceIndex);
 }
 
-/** Returns whether a missing executable should offer the official Grok Build install flow. */
-export function shouldPromptToInstallGrok(command: string, exitCode: number | undefined, output: string): boolean {
+/** Returns whether a missing executable should show Grok Build installation guidance. */
+export function shouldShowMissingGrokGuidance(command: string, exitCode: number | undefined, output: string): boolean {
   const executableName = getExecutableBaseName(command);
   if (!INSTALLABLE_EXECUTABLES.has(executableName)) {
     return false;

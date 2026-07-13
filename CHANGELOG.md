@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 0.1.7
+
+### Changed
+
+- Replaced automatic CLI installation with guidance that opens the official xAI installation documentation.
+- Removed installer execution, temporary installer scripts, PATH updates, shell profile changes, and related settings.
+
+### Security
+
+- Limited missing CLI handling to a warning and an external documentation link.
+
 ## 0.1.6
 
 ### Changed
@@ -32,9 +43,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Native Windows guided install.** The guided installer now uses xAI's official PowerShell
-  installer (`irm https://x.ai/cli/install.ps1 | iex`) on Windows instead of requiring Git Bash to
-  run the Bash script. macOS/Linux are unchanged.
+- Added native Windows support to the guided installation flow available in that release.
 
 ## 0.1.2
 
@@ -54,10 +63,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Added Grok Build launcher command for opening Grok Build CLI in a side terminal from the editor toolbar.
-- Added consent-based guided install flow that uses the official xAI installer only after explicit confirmation.
-- Added Windows, macOS, and Linux PATH handling for the guided install flow.
-- Added absolute installed path fallback so the launcher can work before VS Code reloads updated PATH values.
-- Added configurable command, terminal name, guided install, and absolute path preferences.
+- Added the original consent-based guided installation flow, which was removed in version 0.1.7.
+- Added the original cross-platform environment handling, which was removed in version 0.1.7.
+- Added configurable command and terminal name settings.
 - Added Workspace Trust gating and machine-scoped launch command configuration to avoid workspace-controlled command execution.
 - Added unit tests, VS Code integration smoke tests, metadata checks, package inspection, and CI coverage.
 - Added legal, support, security, and trademark documentation for a public repository.

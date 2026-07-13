@@ -1,27 +1,16 @@
-import * as fs from 'node:fs';
-import * as os from 'node:os';
-import * as path from 'node:path';
 import * as vscode from 'vscode';
 import {
   FALLBACK_TERMINAL_NAME,
   buildExtensionSettingsQuery,
   buildTerminalName,
-  normalizeCliCommand,
   normalizeTerminalName,
   resolveCliCommandSetting,
   resolveTerminalCwd,
-  shouldPromptToInstallGrok,
+  shouldShowMissingGrokGuidance,
 } from './command-utils.js';
-import {
-  buildGrokInstallPromptCommand,
-  buildGrokInstallPromptMessage,
-  buildGrokInstallPromptScript,
-  buildQuotedCommandPath,
-  getDefaultGrokExecutablePath,
-} from './install-utils.js';
 
 const SETTINGS_NAMESPACE = 'grokBuildLauncher';
-const NEWS_URL = 'https://x.ai/news/grok-build-cli';
+const OFFICIAL_INSTALLATION_URL = 'https://docs.x.ai/build/overview';
 
 let terminalSequence = 1;
 
@@ -41,37 +30,12 @@ function collectShellExecutionOutput(execution: vscode.TerminalShellExecution): 
   })();
 }
 
-function writeGrokInstallPromptScript(): string {
-  const scriptPath = path.join(os.tmpdir(), `grok-build-launcher-install-${process.pid}-${Date.now()}.js`);
-  fs.writeFileSync(scriptPath, buildGrokInstallPromptScript(), 'utf8');
-
-  return scriptPath;
-}
-
 async function openExtensionSettings(context: vscode.ExtensionContext): Promise<void> {
   await vscode.commands.executeCommand('workbench.action.openSettings', buildExtensionSettingsQuery(context.extension.id));
 }
 
 async function openGrokInstallInstructions(): Promise<void> {
-  await vscode.env.openExternal(vscode.Uri.parse(NEWS_URL));
-}
-
-async function updateCommandToInstalledPathIfAvailable(): Promise<void> {
-  const configuration = vscode.workspace.getConfiguration(SETTINGS_NAMESPACE);
-  if (!configuration.get<boolean>('preferAbsoluteInstalledPath', true)) {
-    return;
-  }
-
-  const executablePath = getDefaultGrokExecutablePath(process.platform, process.env, os.homedir());
-  if (!fs.existsSync(executablePath)) {
-    return;
-  }
-
-  const quotedPath = buildQuotedCommandPath(executablePath);
-  await configuration.update('cliCommand', quotedPath, vscode.ConfigurationTarget.Global);
-  void vscode.window.showInformationMessage(
-    `Grok Build CLI was installed. The launcher command now uses ${quotedPath}. Restart VS Code if existing terminals do not see the updated PATH.`,
-  );
+  await vscode.env.openExternal(vscode.Uri.parse(OFFICIAL_INSTALLATION_URL));
 }
 
 function executeCommandWithOptionalShellIntegration(
@@ -144,60 +108,14 @@ function executeCommandWithOptionalShellIntegration(
   );
 }
 
-function startGuidedInstall(context: vscode.ExtensionContext): void {
-  const installTerminal = vscode.window.createTerminal({
-    name: 'Install Grok Build',
-    location: vscode.TerminalLocation.Panel,
-  });
-  const installCommand = buildGrokInstallPromptCommand(writeGrokInstallPromptScript());
-
-  installTerminal.show();
-  executeCommandWithOptionalShellIntegration(
-    installTerminal,
-    installCommand,
-    context,
-    async (event) => {
-      if (event.exitCode === 0) {
-        await updateCommandToInstalledPathIfAvailable();
-      }
-    },
-  );
-}
-
-async function handleMissingGrok(context: vscode.ExtensionContext): Promise<void> {
-  const configuration = vscode.workspace.getConfiguration(SETTINGS_NAMESPACE);
-  const autoInstall = configuration.get<boolean>('autoInstall', true);
-
-  if (!autoInstall) {
-    const selection = await vscode.window.showWarningMessage(
-      `${buildGrokInstallPromptMessage()} Install it manually or enable guided install in settings.`,
-      'Open Settings',
-      'Open xAI Instructions',
-    );
-
-    if (selection === 'Open Settings') {
-      await openExtensionSettings(context);
-    } else if (selection === 'Open xAI Instructions') {
-      await openGrokInstallInstructions();
-    }
-
-    return;
-  }
-
+async function handleMissingGrok(): Promise<void> {
   const selection = await vscode.window.showWarningMessage(
-    `${buildGrokInstallPromptMessage()} Install it now with the official xAI installer?`,
-    { modal: true },
-    'Install',
-    'Open xAI Instructions',
-    'Open Settings',
+    'Grok Build CLI was not found. Install it using the official xAI documentation.',
+    'Open Installation Guide',
   );
 
-  if (selection === 'Install') {
-    startGuidedInstall(context);
-  } else if (selection === 'Open xAI Instructions') {
+  if (selection === 'Open Installation Guide') {
     await openGrokInstallInstructions();
-  } else if (selection === 'Open Settings') {
-    await openExtensionSettings(context);
   }
 }
 
@@ -207,8 +125,8 @@ function watchForMissingGrok(terminal: vscode.Terminal, cliCommand: string, cont
     cliCommand,
     context,
     async (endEvent, output) => {
-      if (shouldPromptToInstallGrok(cliCommand, endEvent.exitCode, output)) {
-        await handleMissingGrok(context);
+      if (shouldShowMissingGrokGuidance(cliCommand, endEvent.exitCode, output)) {
+        await handleMissingGrok();
       }
     },
   );

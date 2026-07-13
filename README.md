@@ -11,7 +11,7 @@ Grok Build Launcher is an unofficial VS Code extension that launches Grok Build 
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.4`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.5`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
 
@@ -26,8 +26,8 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 - Opens a fresh side terminal beside the active editor on every launch
 - Uses the active editor workspace when available, with a fallback to the first open workspace folder
 - Runs the configurable Grok Build CLI command, defaulting to `grok`
-- Offers consent-based guided installation when the default `grok` command is missing
-- Adds the expected Grok binary directory to PATH during guided install where supported
+- Offers explicit-consent guided installation when the default `grok` command is missing
+- Updates the user PATH or selected shell startup files during guided install
 - Falls back to the absolute installed `grok` executable path after guided install when enabled
 - Supports quoted Windows executable paths
 - Does not collect telemetry, analytics, or personal data
@@ -56,13 +56,17 @@ curl -fsSL https://x.ai/cli/install.sh | bash
 
 When the launcher runs the default `grok` command and the integrated terminal reports that it is missing, the extension asks for explicit confirmation before installing anything.
 
-If you choose **Install**, the extension opens a visible install terminal and runs a generated local Node script. That script invokes the official xAI installer and then configures the expected PATH location.
+If you choose **Install**, the extension opens a visible install terminal and runs a generated local Node script. The script visibly invokes the upstream xAI installer, then configures the expected PATH location. It never starts an installation unless you select **Install**.
+
+The upstream installer makes network requests to `x.ai`; its download, authentication, behavior, and applicable xAI terms are outside this extension. Review those terms and the displayed terminal command before consenting.
 
 Platform behavior:
 
-- Windows: runs the official xAI PowerShell installer (`irm https://x.ai/cli/install.ps1 | iex`) and adds `%USERPROFILE%\.grok\bin` to the Windows user PATH using the Windows user environment API.
-- macOS: runs the official installer through the active shell and ensures `$HOME/.grok/bin` is present in the relevant shell startup files, including `.zshrc` and `.zprofile` for zsh.
-- Linux: runs the official installer through the active shell and ensures `$HOME/.grok/bin` is present in the relevant shell startup file, such as `.bashrc`, `.zshrc`, `.profile`, or fish config.
+- Windows: runs the upstream PowerShell installer (`irm https://x.ai/cli/install.ps1 | iex`) and adds `%USERPROFILE%\.grok\bin` only to the Windows user PATH. It does not change the system PATH.
+- macOS: runs `curl -fsSL https://x.ai/cli/install.sh | bash` through the configured shell (or `/bin/sh` if none is configured). For zsh it updates `.zshrc` and `.zprofile`; for bash it updates `.bashrc` and `.bash_profile`; for fish it updates `.config/fish/config.fish`; for other shells it updates `.profile`.
+- Linux: runs the same shell installer. For zsh it updates `.zshrc`; for bash it updates `.bashrc`; for fish it updates `.config/fish/config.fish`; for other shells it updates `.profile`.
+
+On macOS and Linux, each startup file is changed only when it does not already contain `.grok/bin`.
 
 After a successful guided install, the extension can update `grokBuildLauncher.cliCommand` to the detected absolute executable path. This makes the launcher work even before VS Code is restarted and before new terminals inherit the updated PATH.
 
@@ -76,7 +80,7 @@ When possible, the launcher opens the terminal in the workspace folder of the ac
 
 The launcher checks command availability through VS Code terminal shell integration, so detection follows the same environment used by the integrated terminal rather than the extension host process.
 
-For safety, the launcher is disabled in untrusted workspaces. The executable command is treated as machine-level user configuration and workspace-controlled command values are ignored, preventing a repository from changing the command that runs when you click the toolbar button.
+For safety, the launcher is disabled in untrusted workspaces. The executable command is read only from the global user setting (or the default), and workspace-controlled command values are ignored. This prevents a repository from changing the command that runs when you click the toolbar button.
 
 ## Configuration
 

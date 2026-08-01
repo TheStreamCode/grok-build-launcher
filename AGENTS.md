@@ -3,8 +3,8 @@
 ## Scope And Structure
 
 - `src/extension.ts` owns VS Code command registration, workspace-trust checks, terminal creation, shell-integration handling, and user notifications.
-- `src/command-utils.ts` contains pure, VS Code-independent helpers for command parsing, missing-CLI detection, terminal naming, bounded diagnostics, and workspace cwd resolution.
-- `test/*.test.js` contains Node unit, regression, documentation, and package-metadata tests.
+- `src/command-utils.ts` contains pure, VS Code-independent helpers for command parsing, missing-CLI detection, terminal naming, bounded diagnostics, workspace cwd resolution, and the keyed disposable registry that owns per-launch resources.
+- `test/*.test.js` contains Node unit, regression, documentation, and package-metadata tests. New files matching that glob are picked up automatically by `npm run test:unit`.
 - `test/integration/` contains the VS Code extension-host smoke test.
 - `media/icon.png` and `media/launcher-mark.svg` are the original packaged assets.
 - `docs/` stores dated engineering plans and reviews. Keep current user-facing instructions in `README.md`.
@@ -35,7 +35,8 @@ Run `npm ci`, `npm run audit`, `npm run typecheck`, `npm run check`, and `npm ru
 - Do not add `child_process`, automatic installers, remote script execution, PATH edits, shell-profile edits, or silent dependency downloads.
 - Keep missing-CLI guidance conservative: monitor only a direct `grok` executable, require actual command-not-found output, retain at most 8 KiB temporarily, and never persist or transmit terminal output.
 - Keep parsing and decision logic in pure helpers with focused regression tests. Limit `src/extension.ts` to VS Code API orchestration.
-- Preserve the shell-integration timeout fallback so the launcher still works when shell integration is unavailable.
+- Never push per-launch listeners or timers onto `context.subscriptions`. VS Code clears that array only on deactivate, so repeated launches would grow it without bound, and calling `.dispose()` does not remove the entry. Register them in the `launchResources` registry instead and let `onDidCloseTerminal` tear them down. `src/extension.ts` must keep exactly one `context.subscriptions.push(` call, in `activate`, and a regression test enforces it.
+- Preserve the shell-integration timeout fallback so the launcher still works when shell integration is unavailable. The fallback must not write to a terminal that already exited.
 - Open installation help only through the verified HTTPS xAI documentation URL already defined in the extension.
 
 ## Security And Privacy

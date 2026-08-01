@@ -11,7 +11,7 @@ Grok Build Launcher is an unofficial VS Code extension that launches Grok Build 
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.9`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.10`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
 
@@ -62,7 +62,7 @@ Each launch creates a new terminal beside the current editor and sends the confi
 
 When possible, the launcher opens the terminal in the workspace folder of the active editor. If the active editor is outside the workspace, it falls back to the first workspace folder in the current VS Code window.
 
-The launcher checks command availability through VS Code terminal shell integration, so detection follows the same environment used by the integrated terminal rather than the extension host process.
+The launcher checks command availability through VS Code terminal shell integration, so detection follows the same environment used by the integrated terminal rather than the extension host process. The listeners and timers created for a launch are released as soon as that launch finishes or its terminal is closed, so repeated launches do not accumulate resources in the extension host.
 
 For safety, the launcher is disabled in untrusted workspaces. The executable command is read only from the global user setting (or the default), and workspace-controlled command values are ignored. This prevents a repository from changing the command that runs when you click the toolbar button.
 

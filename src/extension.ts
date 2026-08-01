@@ -4,6 +4,7 @@ import {
   appendBoundedOutput,
   buildExtensionSettingsQuery,
   buildTerminalName,
+  createDisposableRegistry,
   isGrokCliCommand,
   normalizeTerminalName,
   resolveCliCommandSetting,
@@ -14,8 +15,17 @@ import {
 const SETTINGS_NAMESPACE = 'grokBuildLauncher';
 const OFFICIAL_INSTALLATION_URL = 'https://docs.x.ai/build/overview';
 const MAX_CAPTURED_SHELL_OUTPUT = 8 * 1024;
+const SHELL_INTEGRATION_TIMEOUT_MS = 3000;
 
 let terminalSequence = 1;
+
+/**
+ * Owns the listeners and timers created by each launch.
+ *
+ * They must never be pushed onto `context.subscriptions`, which VS Code only clears on
+ * deactivate and which would therefore grow without bound across launches.
+ */
+const launchResources = createDisposableRegistry<vscode.Terminal>();
 
 function collectShellExecutionOutput(execution: vscode.TerminalShellExecution): Promise<string> {
   return (async () => {
@@ -48,10 +58,19 @@ async function openGrokInstallInstructions(): Promise<void> {
 function executeCommandWithOptionalShellIntegration(
   terminal: vscode.Terminal,
   command: string,
-  context: vscode.ExtensionContext,
   onShellExecutionEnd?: (event: vscode.TerminalShellExecutionEndEvent, output: string) => void | Promise<void>,
 ): void {
   let executionStarted = false;
+  let fallbackHandle: ReturnType<typeof setTimeout> | undefined;
+
+  const fallbackTimer: vscode.Disposable = {
+    dispose: () => {
+      if (fallbackHandle !== undefined) {
+        clearTimeout(fallbackHandle);
+        fallbackHandle = undefined;
+      }
+    },
+  };
 
   const startExecution = (shellIntegration: vscode.TerminalShellIntegration) => {
     if (executionStarted) {
@@ -59,32 +78,31 @@ function executeCommandWithOptionalShellIntegration(
     }
 
     executionStarted = true;
-    shellIntegrationListener.dispose();
-    clearTimeout(fallbackHandle);
+    launchResources.release(terminal, shellIntegrationListener);
+    launchResources.release(terminal, fallbackTimer);
+
+    if (!onShellExecutionEnd) {
+      shellIntegration.executeCommand(command);
+      return;
+    }
 
     let execution: vscode.TerminalShellExecution | undefined;
     let outputPromise: Promise<string> | undefined;
 
-    const executionListener = onShellExecutionEnd
-      ? vscode.window.onDidEndTerminalShellExecution(async (endEvent) => {
-        if (endEvent.terminal !== terminal || (execution && endEvent.execution !== execution)) {
-          return;
-        }
+    const executionListener = vscode.window.onDidEndTerminalShellExecution(async (endEvent) => {
+      if (endEvent.terminal !== terminal || (execution && endEvent.execution !== execution)) {
+        return;
+      }
 
-        executionListener?.dispose();
-        const output = outputPromise ? await outputPromise : '';
-        await onShellExecutionEnd(endEvent, output);
-      })
-      : undefined;
+      launchResources.release(terminal, executionListener);
+      const output = outputPromise ? await outputPromise : '';
+      await onShellExecutionEnd(endEvent, output);
+    });
 
-    if (executionListener) {
-      context.subscriptions.push(executionListener);
-    }
+    launchResources.track(terminal, executionListener);
 
     execution = shellIntegration.executeCommand(command);
-    if (executionListener) {
-      outputPromise = collectShellExecutionOutput(execution);
-    }
+    outputPromise = collectShellExecutionOutput(execution);
   };
 
   const shellIntegrationListener = vscode.window.onDidChangeTerminalShellIntegration((event) => {
@@ -95,26 +113,31 @@ function executeCommandWithOptionalShellIntegration(
     startExecution(event.shellIntegration);
   });
 
-  const fallbackHandle = setTimeout(() => {
+  launchResources.track(terminal, shellIntegrationListener);
+  launchResources.track(terminal, fallbackTimer);
+
+  fallbackHandle = setTimeout(() => {
+    fallbackHandle = undefined;
+
     if (terminal.shellIntegration) {
       startExecution(terminal.shellIntegration);
       return;
     }
 
     executionStarted = true;
-    shellIntegrationListener.dispose();
+    launchResources.release(terminal, shellIntegrationListener);
+    launchResources.release(terminal, fallbackTimer);
+
+    if (terminal.exitStatus !== undefined) {
+      return;
+    }
+
     terminal.sendText(command, true);
-  }, 3000);
+  }, SHELL_INTEGRATION_TIMEOUT_MS);
 
   if (terminal.shellIntegration) {
     startExecution(terminal.shellIntegration);
-    return;
   }
-
-  context.subscriptions.push(
-    shellIntegrationListener,
-    { dispose: () => clearTimeout(fallbackHandle) },
-  );
 }
 
 async function handleMissingGrok(): Promise<void> {
@@ -128,7 +151,7 @@ async function handleMissingGrok(): Promise<void> {
   }
 }
 
-function watchForMissingGrok(terminal: vscode.Terminal, cliCommand: string, context: vscode.ExtensionContext): void {
+function watchForMissingGrok(terminal: vscode.Terminal, cliCommand: string): void {
   const handleShellExecutionEnd = isGrokCliCommand(cliCommand)
     ? async (endEvent: vscode.TerminalShellExecutionEndEvent, output: string) => {
       if (shouldShowMissingGrokGuidance(cliCommand, endEvent.exitCode, output)) {
@@ -140,7 +163,6 @@ function watchForMissingGrok(terminal: vscode.Terminal, cliCommand: string, cont
   executeCommandWithOptionalShellIntegration(
     terminal,
     cliCommand,
-    context,
     handleShellExecutionEnd,
   );
 }
@@ -183,7 +205,7 @@ export function activate(context: vscode.ExtensionContext): void {
       cwd,
     });
     terminal.show();
-    watchForMissingGrok(terminal, cliCommand, context);
+    watchForMissingGrok(terminal, cliCommand);
     void vscode.window.setStatusBarMessage(`Started ${terminalBaseName}`, 2500);
   });
 
@@ -191,8 +213,18 @@ export function activate(context: vscode.ExtensionContext): void {
     await openExtensionSettings(context);
   });
 
-  context.subscriptions.push(openCliCommand, openSettingsCommand);
+  const terminalCloseListener = vscode.window.onDidCloseTerminal((closedTerminal) => {
+    launchResources.releaseAll(closedTerminal);
+  });
+
+  context.subscriptions.push(
+    openCliCommand,
+    openSettingsCommand,
+    terminalCloseListener,
+    { dispose: () => launchResources.dispose() },
+  );
 }
 
 export function deactivate(): void {
+  launchResources.dispose();
 }

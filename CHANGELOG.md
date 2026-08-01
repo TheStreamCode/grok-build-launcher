@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 0.1.10 — 2026-08-01
+
+### Fixed
+
+- Fixed a resource leak that grew the extension subscription list on every launch. Shell-integration listeners, the fallback timer, and shell-execution listeners are now owned by a per-terminal registry that is torn down when the terminal closes, instead of being appended to `context.subscriptions`, which VS Code only clears on deactivate.
+- Stopped the shell-integration fallback from sending the launch command to a terminal that the user closed during the three-second wait.
+
+### Changed
+
+- Moved per-launch resource ownership into a pure, VS Code-independent `createDisposableRegistry` helper in `src/command-utils.ts`, keeping `src/extension.ts` limited to VS Code API orchestration.
+- Named the shell-integration fallback delay as an explicit constant. The three-second timeout, terminal placement, and fresh-terminal-per-launch behavior are unchanged.
+
+### Documentation
+
+- Recorded the launch-resource ownership invariant in `AGENTS.md`.
+
 ## 0.1.9
 
 ### Changed

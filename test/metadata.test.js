@@ -46,7 +46,7 @@ test('package metadata is public-ready and clearly unofficial', () => {
   assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
   assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.9');
+  assert.equal(packageJson.version, '0.1.10');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
@@ -217,4 +217,18 @@ test('changelog documents the initial release scope', () => {
   assert.match(changelog, /original SVG command icon/);
   assert.match(changelog, /official xAI installation documentation/);
   assert.match(changelog, /Added legal, support, security, and trademark documentation/);
+});
+
+test('the released version is consistent across manifest, lockfile, docs, and citation', () => {
+  const version = readPackageJson().version;
+  const escapedVersion = version.replace(/\./g, '\\.');
+  const lockfile = JSON.parse(readText('package-lock.json'));
+
+  assert.match(version, /^\d+\.\d+\.\d+$/);
+  assert.equal(lockfile.version, version);
+  assert.equal(lockfile.packages[''].version, version);
+  assert.match(readText('CHANGELOG.md'), new RegExp(`^## ${escapedVersion}(?:$|\\s)`, 'm'));
+  assert.match(readText('README.md'), new RegExp(`Current documented release: \`${escapedVersion}\``));
+  assert.match(readText('CITATION.cff'), new RegExp(`^version: "${escapedVersion}"$`, 'm'));
+  assert.match(readText('.github/ISSUE_TEMPLATE/bug_report.yml'), new RegExp(`placeholder: "${escapedVersion}"`));
 });

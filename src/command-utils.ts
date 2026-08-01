@@ -12,6 +12,90 @@ type ConfigurationInspectionLike<T> = {
   globalValue?: T;
 };
 
+type DisposableLike = { dispose(): void };
+
+export type DisposableRegistry<TKey> = {
+  /** Registers a resource that belongs to the given key. */
+  track(key: TKey, disposable: DisposableLike): void;
+  /** Disposes a single tracked resource and forgets it. */
+  release(key: TKey, disposable: DisposableLike): void;
+  /** Disposes every resource tracked for the key and forgets the key. */
+  releaseAll(key: TKey): void;
+  /** Disposes every tracked resource for every key. */
+  dispose(): void;
+  /** Returns how many keys still hold tracked resources. */
+  size(): number;
+};
+
+/**
+ * Creates a keyed registry for short-lived resources.
+ *
+ * Extension hosts only clear `context.subscriptions` on deactivate, so per-invocation
+ * listeners and timers must be owned here and released when their key goes away.
+ */
+export function createDisposableRegistry<TKey>(): DisposableRegistry<TKey> {
+  const entries = new Map<TKey, Set<DisposableLike>>();
+
+  function disposeSafely(disposable: DisposableLike): void {
+    try {
+      disposable.dispose();
+    } catch {
+      // Teardown must continue even when one resource fails to dispose.
+    }
+  }
+
+  function track(key: TKey, disposable: DisposableLike): void {
+    const tracked = entries.get(key);
+
+    if (tracked) {
+      tracked.add(disposable);
+      return;
+    }
+
+    entries.set(key, new Set([disposable]));
+  }
+
+  function release(key: TKey, disposable: DisposableLike): void {
+    const tracked = entries.get(key);
+
+    if (!tracked || !tracked.delete(disposable)) {
+      return;
+    }
+
+    if (tracked.size === 0) {
+      entries.delete(key);
+    }
+
+    disposeSafely(disposable);
+  }
+
+  function releaseAll(key: TKey): void {
+    const tracked = entries.get(key);
+
+    if (!tracked) {
+      return;
+    }
+
+    entries.delete(key);
+
+    for (const disposable of tracked) {
+      disposeSafely(disposable);
+    }
+  }
+
+  function dispose(): void {
+    for (const key of [...entries.keys()]) {
+      releaseAll(key);
+    }
+  }
+
+  function size(): number {
+    return entries.size;
+  }
+
+  return { track, release, releaseAll, dispose, size };
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

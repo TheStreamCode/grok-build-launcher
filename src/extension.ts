@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
 import {
   FALLBACK_TERMINAL_NAME,
+  appendBoundedOutput,
   buildExtensionSettingsQuery,
   buildTerminalName,
+  isGrokCliCommand,
   normalizeTerminalName,
   resolveCliCommandSetting,
   resolveTerminalCwd,
@@ -11,6 +13,7 @@ import {
 
 const SETTINGS_NAMESPACE = 'grokBuildLauncher';
 const OFFICIAL_INSTALLATION_URL = 'https://docs.x.ai/build/overview';
+const MAX_CAPTURED_SHELL_OUTPUT = 8 * 1024;
 
 let terminalSequence = 1;
 
@@ -20,7 +23,11 @@ function collectShellExecutionOutput(execution: vscode.TerminalShellExecution): 
 
     try {
       for await (const chunk of execution.read()) {
-        output += chunk;
+        output = appendBoundedOutput(output, chunk, MAX_CAPTURED_SHELL_OUTPUT);
+
+        if (output.length >= MAX_CAPTURED_SHELL_OUTPUT) {
+          break;
+        }
       }
     } catch {
       return output;
@@ -60,14 +67,14 @@ function executeCommandWithOptionalShellIntegration(
 
     const executionListener = onShellExecutionEnd
       ? vscode.window.onDidEndTerminalShellExecution(async (endEvent) => {
-      if (endEvent.terminal !== terminal || (execution && endEvent.execution !== execution)) {
-        return;
-      }
+        if (endEvent.terminal !== terminal || (execution && endEvent.execution !== execution)) {
+          return;
+        }
 
-      executionListener?.dispose();
-      const output = outputPromise ? await outputPromise : '';
-      await onShellExecutionEnd(endEvent, output);
-    })
+        executionListener?.dispose();
+        const output = outputPromise ? await outputPromise : '';
+        await onShellExecutionEnd(endEvent, output);
+      })
       : undefined;
 
     if (executionListener) {
@@ -75,7 +82,9 @@ function executeCommandWithOptionalShellIntegration(
     }
 
     execution = shellIntegration.executeCommand(command);
-    outputPromise = collectShellExecutionOutput(execution);
+    if (executionListener) {
+      outputPromise = collectShellExecutionOutput(execution);
+    }
   };
 
   const shellIntegrationListener = vscode.window.onDidChangeTerminalShellIntegration((event) => {
@@ -120,15 +129,19 @@ async function handleMissingGrok(): Promise<void> {
 }
 
 function watchForMissingGrok(terminal: vscode.Terminal, cliCommand: string, context: vscode.ExtensionContext): void {
+  const handleShellExecutionEnd = isGrokCliCommand(cliCommand)
+    ? async (endEvent: vscode.TerminalShellExecutionEndEvent, output: string) => {
+      if (shouldShowMissingGrokGuidance(cliCommand, endEvent.exitCode, output)) {
+        await handleMissingGrok();
+      }
+    }
+    : undefined;
+
   executeCommandWithOptionalShellIntegration(
     terminal,
     cliCommand,
     context,
-    async (endEvent, output) => {
-      if (shouldShowMissingGrokGuidance(cliCommand, endEvent.exitCode, output)) {
-        await handleMissingGrok();
-      }
-    },
+    handleShellExecutionEnd,
   );
 }
 

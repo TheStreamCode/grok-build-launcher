@@ -1,9 +1,11 @@
 {
   "name": "vscode-grok-build-launcher",
+  "private": true,
+  "type": "commonjs",
   "displayName": "Grok Build Launcher — Run Grok CLI in a Side Terminal",
   "description": "Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.",
   "publisher": "mikesoft",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "repository": {
     "type": "git",
     "url": "https://github.com/TheStreamCode/grok-build-launcher.git"
@@ -65,8 +67,8 @@
         "title": "Open Grok Build in Side Terminal",
         "category": "Grok Build Launcher",
         "icon": {
-          "light": "./media/launcher-mark.svg",
-          "dark": "./media/launcher-mark.svg"
+          "light": "./media/launcher-mark.png",
+          "dark": "./media/launcher-mark.png"
         }
       },
       {
@@ -111,13 +113,12 @@
     "test:metadata": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/metadata.test.js",
     "vscode:prepublish": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\" && node ./node_modules/typescript/bin/tsc -p . --pretty false",
     "package": "node ./node_modules/@vscode/vsce/vsce package",
-    "check": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js && node ./node_modules/@vscode/vsce/vsce ls",
-    "generate:icon": "node ./scripts/generate-icon.js"
+    "check": "node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js && node ./node_modules/@vscode/vsce/vsce ls"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/vscode": "^1.103.0",
-    "@vscode/test-electron": "^3.0.0",
+    "@types/node": "^22.20.1",
+    "@types/vscode": "1.103.0",
+    "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.9.2",
     "typescript": "^7.0.2"
   }

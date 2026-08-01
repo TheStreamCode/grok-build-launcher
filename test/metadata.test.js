@@ -41,15 +41,18 @@ test('package metadata is public-ready and clearly unofficial', () => {
   const packageJson = readPackageJson();
 
   assert.equal(packageJson.name, 'vscode-grok-build-launcher');
+  assert.equal(packageJson.private, true);
+  assert.equal(packageJson.type, 'commonjs');
   assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
   assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.7');
+  assert.equal(packageJson.version, '0.1.8');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
   assert.equal(packageJson.bugs.url, 'https://github.com/TheStreamCode/grok-build-launcher/issues');
   assert.equal(packageJson.engines.vscode, '^1.103.0');
+  assert.equal(packageJson.devDependencies['@types/vscode'], '1.103.0');
   assert.deepEqual(packageJson.capabilities.untrustedWorkspaces.restrictedConfigurations, [
     'grokBuildLauncher.cliCommand',
   ]);
@@ -65,8 +68,8 @@ test('package contributes launcher commands, toolbar item, and launch settings',
   assert.equal(openCliCommand.title, 'Open Grok Build in Side Terminal');
   assert.equal(openCliCommand.category, 'Grok Build Launcher');
   assert.deepEqual(openCliCommand.icon, {
-    light: './media/launcher-mark.svg',
-    dark: './media/launcher-mark.svg',
+    light: './media/launcher-mark.png',
+    dark: './media/launcher-mark.png',
   });
   assert.equal(openSettingsCommand.command, 'grokBuildLauncher.openSettings');
   assert.equal(packageJson.contributes.menus['editor/title'][0].command, 'grokBuildLauncher.openCli');
@@ -81,12 +84,15 @@ test('package contributes launcher commands, toolbar item, and launch settings',
 
 test('extension assets are original packaged assets on expected paths', () => {
   const marketplaceIcon = readPngSize('media/icon.png');
-  const commandIcon = readText('media/launcher-mark.svg');
-  const commandIconMarkup = stripEmbeddedImagePayloads(commandIcon);
+  const commandIcon = readPngSize('media/launcher-mark.png');
+  const commandIconSource = readText('media/launcher-mark.svg');
+  const commandIconMarkup = stripEmbeddedImagePayloads(commandIconSource);
 
   assert.equal(marketplaceIcon.width, 256);
   assert.equal(marketplaceIcon.height, 256);
-  assert.match(commandIcon, /<svg/i);
+  assert.equal(commandIcon.width, 256);
+  assert.equal(commandIcon.height, 256);
+  assert.match(commandIconSource, /<svg/i);
   assert.doesNotMatch(commandIconMarkup, /xai|x\.ai|grok/i);
 });
 
@@ -148,21 +154,44 @@ test('ignore rules keep generated, local, and engineering-only files out of arti
   assert.ok(vscodeignoreEntries.includes('test/**'));
   assert.ok(vscodeignoreEntries.includes('docs/**'));
   assert.ok(vscodeignoreEntries.includes('scripts/**'));
+  assert.ok(vscodeignoreEntries.includes('media/launcher-mark.svg'));
   assert.ok(vscodeignoreEntries.includes('.github/**'));
   assert.ok(vscodeignoreEntries.includes('AGENTS.md'));
   assert.ok(vscodeignoreEntries.includes('out/**/*.map'));
   assert.ok(vscodeignoreEntries.includes('package-lock.json'));
 });
 
-test('CI validates the extension with npm on Windows and Linux', () => {
+test('CI validates the extension with pinned actions on Windows, macOS, and Linux', () => {
   const workflow = readText('.github/workflows/ci.yml');
 
   assert.match(workflow, /^name: CI$/m);
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /ubuntu-latest/);
+  assert.match(workflow, /macos-latest/);
+  assert.match(workflow, /concurrency:/);
+  assert.match(workflow, /timeout-minutes: 20/);
+  assert.match(workflow, /actions\/checkout@[0-9a-f]{40} # v7/);
+  assert.match(workflow, /actions\/setup-node@[0-9a-f]{40} # v6/);
+  assert.match(workflow, /persist-credentials: false/);
   assert.match(workflow, /cache: npm/);
   assert.match(workflow, /npm ci/);
   assert.match(workflow, /npm run check/);
+});
+
+test('GitHub contribution templates collect actionable and safe reports', () => {
+  const codeowners = readText('.github/CODEOWNERS');
+  const bugReport = readText('.github/ISSUE_TEMPLATE/bug_report.yml');
+  const featureRequest = readText('.github/ISSUE_TEMPLATE/feature_request.yml');
+  const issueConfig = readText('.github/ISSUE_TEMPLATE/config.yml');
+  const pullRequestTemplate = readText('.github/pull_request_template.md');
+
+  assert.match(codeowners, /^\* @TheStreamCode$/m);
+  assert.match(bugReport, /Reproduction steps/);
+  assert.match(bugReport, /contains no secrets, tokens, or private repository content/);
+  assert.match(featureRequest, /keeps the project independent and unofficial/);
+  assert.match(issueConfig, /security\/advisories\/new/);
+  assert.match(pullRequestTemplate, /npm run check/);
+  assert.match(pullRequestTemplate, /independent-project branding rules/);
 });
 
 test('changelog documents the initial release scope', () => {
@@ -171,7 +200,7 @@ test('changelog documents the initial release scope', () => {
   assert.match(changelog, /^# Changelog$/m);
   assert.match(changelog, /## 0\.1\.0/);
   assert.match(changelog, /Added Grok Build launcher command/);
-  assert.match(changelog, /## 0\.1\.7/);
+  assert.match(changelog, /## 0\.1\.8/);
   assert.match(changelog, /official xAI installation documentation/);
   assert.match(changelog, /Added legal, support, security, and trademark documentation/);
 });

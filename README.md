@@ -11,7 +11,7 @@ Grok Build Launcher is an unofficial VS Code extension that launches Grok Build 
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.7`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.8`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
 
@@ -29,6 +29,7 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 - Shows professional installation guidance when the default `grok` command is missing
 - Opens the verified official xAI installation documentation in the external browser on request
 - Does not download or execute installers or modify PATH and shell profile configuration
+- Keeps missing-command diagnostics bounded in memory and only monitors direct `grok` launches
 - Supports quoted Windows executable paths
 - Does not collect telemetry, analytics, or personal data
 
@@ -118,6 +119,8 @@ The launcher prefers the workspace folder of the active editor. To control where
 
 Grok Build Launcher does not collect telemetry, analytics, or personal data.
 
+When VS Code terminal shell integration is available, the extension temporarily inspects at most the first 8 KiB of output from a direct `grok` launch to distinguish a missing executable from a normal CLI error. This diagnostic output is kept only in memory, is discarded after the check, and is never stored or transmitted by the extension. Custom commands and wrappers are not monitored.
+
 The extension launches commands in your local VS Code integrated terminal. Grok Build CLI itself is a separate product with its own behavior, authentication, network access, and terms.
 
 ## Legal And Trademarks
@@ -131,15 +134,14 @@ See `TRADEMARKS.md` for the full affiliation and trademark notice.
 Local verification and packaging:
 
 ```bash
-npm install
+npm ci
 npm run check
-npm run test:integration
 npm run package
 ```
 
 `npm run package` creates the `.vsix` file in the workspace root.
 
-The repository includes unit tests, metadata checks, VS Code integration smoke tests, and CI coverage for Windows and Linux.
+The repository includes unit tests, metadata checks, VS Code integration smoke tests, and CI coverage for Windows, macOS, and Linux.
 
 ## Support
 

@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 0.1.8
+
+### Changed
+
+- Limited missing-command detection to direct `grok` launches and require actual shell error evidence before showing installation guidance.
+- Added structured GitHub issue forms, clearer contribution and security guidance, and cross-platform CI hardening.
+- Preserved the existing icon design while using losslessly optimized PNG assets in the packaged extension.
+- Removed the stale icon generator because it no longer reproduced the shipped artwork.
+
+### Security
+
+- Bounded temporary shell-output diagnostics to 8 KiB and stopped reading output for custom commands and wrappers.
+- Updated development dependencies and pinned GitHub Actions to immutable commit SHAs.
+
 ## 0.1.7
 
 ### Changed

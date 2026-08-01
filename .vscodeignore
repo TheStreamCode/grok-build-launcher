@@ -2,9 +2,12 @@ src/**
 test/**
 docs/**
 scripts/**
+media/launcher-mark.svg
 node_modules/**
 .git/**
 .gitignore
+.gitattributes
+.editorconfig
 AGENTS.md
 .github/**
 .vscode/**

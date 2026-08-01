@@ -4,9 +4,11 @@ const assert = require('node:assert/strict');
 const {
   FALLBACK_CLI_COMMAND,
   FALLBACK_TERMINAL_NAME,
+  appendBoundedOutput,
   buildExtensionSettingsQuery,
   buildTerminalName,
   extractExecutable,
+  isGrokCliCommand,
   normalizeCliCommand,
   normalizeTerminalName,
   resolveCliCommandSetting,
@@ -73,21 +75,40 @@ test('extractExecutable preserves quoted Windows paths with spaces', () => {
   );
 });
 
+test('isGrokCliCommand recognizes direct commands and executable paths', () => {
+  assert.equal(isGrokCliCommand('grok'), true);
+  assert.equal(isGrokCliCommand('grok --version'), true);
+  assert.equal(isGrokCliCommand('"C:\\Program Files\\Grok\\grok.exe"'), true);
+});
+
+test('isGrokCliCommand rejects generic aliases and wrapper commands', () => {
+  assert.equal(isGrokCliCommand('agent'), false);
+  assert.equal(isGrokCliCommand('custom-grok-wrapper'), false);
+});
+
+test('appendBoundedOutput enforces a fixed diagnostic buffer limit', () => {
+  assert.equal(appendBoundedOutput('abc', 'defghi', 6), 'abcdef');
+  assert.equal(appendBoundedOutput('abcdef', 'ignored', 6), 'abcdef');
+  assert.equal(appendBoundedOutput('abc', 'ignored', 0), '');
+});
+
 test('shouldShowMissingGrokGuidance detects PowerShell command-not-found output', () => {
   const output = "grok: The term 'grok' is not recognized as a name of a cmdlet, function, script file, or executable program.";
 
   assert.equal(shouldShowMissingGrokGuidance('grok', 1, output), true);
 });
 
-test('shouldShowMissingGrokGuidance detects POSIX command-not-found exit codes', () => {
-  assert.equal(shouldShowMissingGrokGuidance('grok', 127, ''), true);
+test('shouldShowMissingGrokGuidance detects POSIX command-not-found failures', () => {
+  assert.equal(shouldShowMissingGrokGuidance('grok', 127, 'bash: grok: command not found'), true);
 });
 
-test('shouldShowMissingGrokGuidance detects the missing agent alias', () => {
-  assert.equal(shouldShowMissingGrokGuidance('agent', 127, ''), true);
+test('shouldShowMissingGrokGuidance does not infer a missing CLI from exit code alone', () => {
+  assert.equal(shouldShowMissingGrokGuidance('grok', 127, ''), false);
+  assert.equal(shouldShowMissingGrokGuidance('grok', 127, 'Error: helper process failed'), false);
 });
 
-test('shouldShowMissingGrokGuidance ignores custom wrapper commands', () => {
+test('shouldShowMissingGrokGuidance ignores aliases and custom wrapper commands', () => {
+  assert.equal(shouldShowMissingGrokGuidance('agent', 127, 'agent: command not found'), false);
   assert.equal(shouldShowMissingGrokGuidance('custom-grok-wrapper', 1, 'custom-grok-wrapper: command not found'), false);
 });
 

@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security report
-    url: https://mikesoft.it
-    about: Please report sensitive vulnerabilities privately.
+    url: https://github.com/TheStreamCode/grok-build-launcher/security/advisories/new
+    about: Report security vulnerabilities privately through GitHub.
+  - name: Support
+    url: https://github.com/TheStreamCode/grok-build-launcher/blob/main/SUPPORT.md
+    about: Read the support guide before opening an issue.

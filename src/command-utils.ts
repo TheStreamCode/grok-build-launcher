@@ -12,10 +12,24 @@ type ConfigurationInspectionLike<T> = {
   globalValue?: T;
 };
 
-const INSTALLABLE_EXECUTABLES = new Set(['grok', 'agent']);
-
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Returns whether the configured command directly launches the Grok CLI. */
+export function isGrokCliCommand(command: string): boolean {
+  return getExecutableBaseName(command) === 'grok';
+}
+
+/** Appends output without allowing the retained diagnostic buffer to grow past its limit. */
+export function appendBoundedOutput(current: string, chunk: string, maxLength: number): string {
+  const limit = Math.max(0, Math.trunc(maxLength));
+
+  if (current.length >= limit) {
+    return current.slice(0, limit);
+  }
+
+  return current + chunk.slice(0, limit - current.length);
 }
 
 function getExecutableBaseName(command: string): string {
@@ -103,16 +117,11 @@ export function extractExecutable(command: string): string {
 
 /** Returns whether a missing executable should show Grok Build installation guidance. */
 export function shouldShowMissingGrokGuidance(command: string, exitCode: number | undefined, output: string): boolean {
-  const executableName = getExecutableBaseName(command);
-  if (!INSTALLABLE_EXECUTABLES.has(executableName)) {
+  if (!isGrokCliCommand(command)) {
     return false;
   }
 
-  if (exitCode === 127) {
-    return true;
-  }
-
-  if (exitCode !== undefined && exitCode !== 1) {
+  if (exitCode !== undefined && exitCode !== 1 && exitCode !== 127) {
     return false;
   }
 

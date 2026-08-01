@@ -10,6 +10,10 @@ function readText(relativePath) {
   return fs.readFileSync(path.join(rootDir, relativePath), 'utf8');
 }
 
+function readLines(relativePath) {
+  return readText(relativePath).split(/\r?\n/);
+}
+
 function readPackageJson() {
   return JSON.parse(readText('package.json'));
 }
@@ -221,14 +225,13 @@ test('changelog documents the initial release scope', () => {
 
 test('the released version is consistent across manifest, lockfile, docs, and citation', () => {
   const version = readPackageJson().version;
-  const escapedVersion = version.replace(/\./g, '\\.');
   const lockfile = JSON.parse(readText('package-lock.json'));
 
   assert.match(version, /^\d+\.\d+\.\d+$/);
   assert.equal(lockfile.version, version);
   assert.equal(lockfile.packages[''].version, version);
-  assert.match(readText('CHANGELOG.md'), new RegExp(`^## ${escapedVersion}(?:$|\\s)`, 'm'));
-  assert.match(readText('README.md'), new RegExp(`Current documented release: \`${escapedVersion}\``));
-  assert.match(readText('CITATION.cff'), new RegExp(`^version: "${escapedVersion}"$`, 'm'));
-  assert.match(readText('.github/ISSUE_TEMPLATE/bug_report.yml'), new RegExp(`placeholder: "${escapedVersion}"`));
+  assert.ok(readLines('CHANGELOG.md').some((line) => line === `## ${version}` || line.startsWith(`## ${version} `)));
+  assert.ok(readText('README.md').includes(`Current documented release: \`${version}\``));
+  assert.ok(readLines('CITATION.cff').includes(`version: "${version}"`));
+  assert.ok(readText('.github/ISSUE_TEMPLATE/bug_report.yml').includes(`placeholder: "${version}"`));
 });

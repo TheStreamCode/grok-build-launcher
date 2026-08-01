@@ -46,13 +46,14 @@ test('package metadata is public-ready and clearly unofficial', () => {
   assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
   assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.8');
+  assert.equal(packageJson.version, '0.1.9');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
   assert.equal(packageJson.bugs.url, 'https://github.com/TheStreamCode/grok-build-launcher/issues');
   assert.equal(packageJson.engines.vscode, '^1.103.0');
   assert.equal(packageJson.devDependencies['@types/vscode'], '1.103.0');
+  assert.equal(packageJson.capabilities.untrustedWorkspaces.supported, 'limited');
   assert.deepEqual(packageJson.capabilities.untrustedWorkspaces.restrictedConfigurations, [
     'grokBuildLauncher.cliCommand',
   ]);
@@ -68,8 +69,8 @@ test('package contributes launcher commands, toolbar item, and launch settings',
   assert.equal(openCliCommand.title, 'Open Grok Build in Side Terminal');
   assert.equal(openCliCommand.category, 'Grok Build Launcher');
   assert.deepEqual(openCliCommand.icon, {
-    light: './media/launcher-mark.png',
-    dark: './media/launcher-mark.png',
+    light: './media/launcher-mark.svg',
+    dark: './media/launcher-mark.svg',
   });
   assert.equal(openSettingsCommand.command, 'grokBuildLauncher.openSettings');
   assert.equal(packageJson.contributes.menus['editor/title'][0].command, 'grokBuildLauncher.openCli');
@@ -84,14 +85,12 @@ test('package contributes launcher commands, toolbar item, and launch settings',
 
 test('extension assets are original packaged assets on expected paths', () => {
   const marketplaceIcon = readPngSize('media/icon.png');
-  const commandIcon = readPngSize('media/launcher-mark.png');
   const commandIconSource = readText('media/launcher-mark.svg');
   const commandIconMarkup = stripEmbeddedImagePayloads(commandIconSource);
 
   assert.equal(marketplaceIcon.width, 256);
   assert.equal(marketplaceIcon.height, 256);
-  assert.equal(commandIcon.width, 256);
-  assert.equal(commandIcon.height, 256);
+  assert.equal(fs.existsSync(path.join(rootDir, 'media/launcher-mark.png')), false);
   assert.match(commandIconSource, /<svg/i);
   assert.doesNotMatch(commandIconMarkup, /xai|x\.ai|grok/i);
 });
@@ -110,6 +109,11 @@ test('README covers setup, missing CLI guidance, privacy, and affiliation discla
   assert.match(readme, /https:\/\/docs\.x\.ai\/build\/overview/);
   assert.match(readme, /does not download or execute installers/i);
   assert.match(readme, /does not collect telemetry, analytics, or personal data/i);
+  assert.match(readme, /## Build And Deployment/);
+  assert.match(readme, /does not require or read runtime environment variables/i);
+  assert.match(readme, /npm run typecheck/);
+  assert.match(readme, /npm run audit/);
+  assert.match(readme, /npm run package/);
   assert.match(readme, /npm run check/);
 });
 
@@ -117,6 +121,7 @@ test('legal and support documents are present and do not overclaim affiliation',
   const trademarks = readText('TRADEMARKS.md');
   const support = readText('SUPPORT.md');
   const security = readText('SECURITY.md');
+  const securityReview = readText('docs/security-review-2026-08-01.md');
   const license = readText('LICENSE');
   const contributing = readText('CONTRIBUTING.md');
 
@@ -125,6 +130,9 @@ test('legal and support documents are present and do not overclaim affiliation',
   assert.match(support, /GitHub Issues/);
   assert.match(support, /info@mikesoft\.it/);
   assert.match(security, /Please do not report security vulnerabilities through public GitHub issues/i);
+  assert.match(security, /docs\/security-review-2026-08-01\.md/);
+  assert.match(securityReview, /no unresolved critical, high, or medium severity findings/i);
+  assert.match(securityReview, /SEC-001/);
   assert.match(license, /MIT License/);
   assert.match(contributing, /Do not add official xAI or Grok logos/i);
 });
@@ -132,11 +140,14 @@ test('legal and support documents are present and do not overclaim affiliation',
 test('package scripts use deterministic local tooling entry points', () => {
   const packageJson = readPackageJson();
 
+  assert.equal(packageJson.scripts.typecheck, 'node ./node_modules/typescript/bin/tsc -p . --pretty false --noEmit');
   assert.equal(packageJson.scripts.compile, 'node ./node_modules/typescript/bin/tsc -p . --pretty false');
-  assert.equal(packageJson.scripts.test, 'node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js');
-  assert.equal(packageJson.scripts.check, 'node ./node_modules/typescript/bin/tsc -p . --pretty false && node --test test/*.test.js && node ./test/integration/runTest.js && node ./node_modules/@vscode/vsce/vsce ls');
+  assert.equal(packageJson.scripts.test, 'npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js');
+  assert.equal(packageJson.scripts.audit, 'npm audit --audit-level=high');
+  assert.equal(packageJson.scripts['test:package'], 'node ./node_modules/@vscode/vsce/vsce ls');
+  assert.equal(packageJson.scripts.check, 'npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js && npm run test:package');
   assert.equal(packageJson.scripts.package, 'node ./node_modules/@vscode/vsce/vsce package');
-  assert.match(packageJson.scripts['vscode:prepublish'], /rmSync\('out'/);
+  assert.equal(packageJson.scripts['vscode:prepublish'], 'npm run clean && npm run compile');
 });
 
 test('ignore rules keep generated, local, and engineering-only files out of artifacts', () => {
@@ -149,12 +160,13 @@ test('ignore rules keep generated, local, and engineering-only files out of arti
   assert.ok(gitignoreEntries.includes('*.vsix'));
   assert.ok(gitignoreEntries.includes('out/'));
   assert.ok(!gitignoreEntries.includes('package-lock.json'));
+  assert.ok(gitignoreEntries.includes('!.env.example'));
 
   assert.ok(vscodeignoreEntries.includes('src/**'));
   assert.ok(vscodeignoreEntries.includes('test/**'));
   assert.ok(vscodeignoreEntries.includes('docs/**'));
   assert.ok(vscodeignoreEntries.includes('scripts/**'));
-  assert.ok(vscodeignoreEntries.includes('media/launcher-mark.svg'));
+  assert.ok(!vscodeignoreEntries.includes('media/launcher-mark.svg'));
   assert.ok(vscodeignoreEntries.includes('.github/**'));
   assert.ok(vscodeignoreEntries.includes('AGENTS.md'));
   assert.ok(vscodeignoreEntries.includes('out/**/*.map'));
@@ -175,6 +187,7 @@ test('CI validates the extension with pinned actions on Windows, macOS, and Linu
   assert.match(workflow, /persist-credentials: false/);
   assert.match(workflow, /cache: npm/);
   assert.match(workflow, /npm ci/);
+  assert.match(workflow, /npm run audit/);
   assert.match(workflow, /npm run check/);
 });
 
@@ -200,7 +213,8 @@ test('changelog documents the initial release scope', () => {
   assert.match(changelog, /^# Changelog$/m);
   assert.match(changelog, /## 0\.1\.0/);
   assert.match(changelog, /Added Grok Build launcher command/);
-  assert.match(changelog, /## 0\.1\.8/);
+  assert.match(changelog, /## 0\.1\.9/);
+  assert.match(changelog, /original SVG command icon/);
   assert.match(changelog, /official xAI installation documentation/);
   assert.match(changelog, /Added legal, support, security, and trademark documentation/);
 });

@@ -11,7 +11,7 @@ Grok Build Launcher is an unofficial VS Code extension that launches Grok Build 
 
 Works on Windows, macOS, and Linux.
 
-Current documented release: `0.1.8`. See `CHANGELOG.md` for release-by-release changes.
+Current documented release: `0.1.9`. See `CHANGELOG.md` for release-by-release changes.
 
 Repository: https://github.com/TheStreamCode/grok-build-launcher
 
@@ -37,6 +37,8 @@ Repository: https://github.com/TheStreamCode/grok-build-launcher
 
 - VS Code `^1.103.0`
 - Grok Build CLI available in the integrated terminal environment
+
+For development, use Node.js 22 and npm with the committed lockfile.
 
 ## Installation
 
@@ -72,6 +74,10 @@ For safety, the launcher is disabled in untrusted workspaces. The executable com
 | `grokBuildLauncher.terminalName` | `Grok Build` | Base label used for created launch terminals. |
 
 `grokBuildLauncher.cliCommand` is a machine-level setting. Configure it from your user or remote machine settings, not from repository workspace settings.
+
+### Environment Variables
+
+The extension does not require or read runtime environment variables. Configuration is managed through the VS Code settings listed above. Local `.env` files are ignored by Git; do not store publisher tokens or other credentials in the repository.
 
 Use the Command Palette to open the extension settings:
 
@@ -131,17 +137,32 @@ See `TRADEMARKS.md` for the full affiliation and trademark notice.
 
 ## Development
 
-Local verification and packaging:
+Install the exact lockfile dependencies, then run the focused checks you need:
 
 ```bash
 npm ci
+npm run typecheck
+npm run test:unit
+npm run test:integration
+npm run audit
 npm run check
+```
+
+`npm run check` compiles the extension, runs unit and metadata tests, executes the VS Code extension-host smoke test, and inspects the package file list.
+
+The repository includes unit tests, metadata checks, VS Code integration smoke tests, and CI coverage for Windows, macOS, and Linux.
+
+## Build And Deployment
+
+Create an installable VSIX with:
+
+```bash
 npm run package
 ```
 
-`npm run package` creates the `.vsix` file in the workspace root.
+The command cleans and recompiles `out/`, then creates `vscode-grok-build-launcher-<version>.vsix` in the repository root. Generated JavaScript source maps, tests, engineering docs, GitHub metadata, local environment files, and development dependencies are excluded from the package.
 
-The repository includes unit tests, metadata checks, VS Code integration smoke tests, and CI coverage for Windows, macOS, and Linux.
+Releases are distributed as versioned VSIX assets on GitHub and may also be published to compatible extension registries by the maintainer. Publishing credentials are deployment secrets: keep them outside the repository and never place them in `.env`, documentation, issue reports, or workflow output.
 
 ## Support
 

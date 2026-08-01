@@ -25,3 +25,7 @@ For direct `grok` launches, the extension may temporarily inspect a bounded pref
 When Grok Build CLI is unavailable, the extension displays installation guidance and can open the official xAI documentation in the external browser. It does not download or execute installers, create temporary installation scripts, or modify PATH and shell profile configuration.
 
 Grok Build CLI is a separate third-party product with its own authentication, network behavior, and security model.
+
+## Security Reviews
+
+The latest repository-grounded review is available in [`docs/security-review-2026-08-01.md`](https://github.com/TheStreamCode/grok-build-launcher/blob/main/docs/security-review-2026-08-01.md). Treat dated reports as point-in-time assessments and verify the current code and dependency state before relying on them.

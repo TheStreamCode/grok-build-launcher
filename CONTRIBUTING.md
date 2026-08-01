@@ -21,8 +21,10 @@ Useful focused commands:
 
 ```bash
 npm run compile
+npm run typecheck
 npm run test:unit
 npm run test:integration
+npm run audit
 npm run package
 ```
 

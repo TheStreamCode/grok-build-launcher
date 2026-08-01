@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 0.1.9
+
+### Changed
+
+- Restored the original SVG command icon as the packaged toolbar asset, preserving its design, format, proportions, and transparency.
+- Added explicit type-check, dependency-audit, and package-inspection scripts and included the security audit in Linux CI.
+- Expanded the README development, environment configuration, build, and deployment guidance.
+- Expanded `AGENTS.md` with architecture, security, asset-preservation, validation, and release invariants.
+
+### Documentation
+
+- Added a repository-grounded security review with resolved controls and residual design considerations.
+
 ## 0.1.8
 
 ### Changed

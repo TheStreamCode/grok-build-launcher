@@ -14,9 +14,12 @@
 
 Use Node.js 22 and the committed npm lockfile.
 
+npm install scripts are denied unless their exact package version is listed in `allowScripts`.
+Review the script before using `npm approve-scripts`; dependency updates require a fresh review.
+
 - `npm ci`: install the exact dependency graph.
 - `npm run clean`: remove compiled output.
-- `npm run compile`: compile TypeScript into `out/`.
+- `npm run compile`: clean stale output, then compile TypeScript into `out/`.
 - `npm run typecheck`: run strict TypeScript checks without emitting files.
 - `npm run test:unit`: compile and run Node unit and metadata tests.
 - `npm run test:integration`: compile and run the VS Code extension-host smoke test.
@@ -26,6 +29,9 @@ Use Node.js 22 and the committed npm lockfile.
 - `npm run package`: clean, compile, and build a versioned `.vsix` package.
 
 Run `npm ci`, `npm run audit`, `npm run typecheck`, `npm run check`, and `npm run package` before a release. Extension-host warnings from the downloaded VS Code runtime are not failures when the process exits successfully; investigate non-zero exits and failed assertions.
+
+`npm ci` must not report an unreviewed `allowScripts` request. Never broaden an approval or carry it
+to a new package version without inspecting that version's install script.
 
 ## Architecture And Behavior Invariants
 

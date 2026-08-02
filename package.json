@@ -105,7 +105,7 @@
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\"",
-    "compile": "node ./node_modules/typescript/bin/tsc -p . --pretty false",
+    "compile": "npm run clean && node ./node_modules/typescript/bin/tsc -p . --pretty false",
     "typecheck": "node ./node_modules/typescript/bin/tsc -p . --pretty false --noEmit",
     "watch": "node ./node_modules/typescript/bin/tsc --watch -p . --pretty false",
     "test": "npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js",
@@ -115,7 +115,7 @@
     "test:metadata": "npm run compile && node --test test/metadata.test.js",
     "test:package": "node ./node_modules/@vscode/vsce/vsce ls",
     "audit": "npm audit --audit-level=high",
-    "vscode:prepublish": "npm run clean && npm run compile",
+    "vscode:prepublish": "npm run compile",
     "package": "node ./node_modules/@vscode/vsce/vsce package",
     "check": "npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js && npm run test:package"
   },
@@ -125,5 +125,9 @@
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.9.2",
     "typescript": "^7.0.2"
+  },
+  "allowScripts": {
+    "@vscode/vsce-sign@2.0.9": true,
+    "keytar@7.9.0": true
   }
 }

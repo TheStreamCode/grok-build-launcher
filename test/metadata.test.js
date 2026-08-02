@@ -125,7 +125,7 @@ test('legal and support documents are present and do not overclaim affiliation',
   const trademarks = readText('TRADEMARKS.md');
   const support = readText('SUPPORT.md');
   const security = readText('SECURITY.md');
-  const securityReview = readText('docs/security-review-2026-08-01.md');
+  const securityReview = readText('docs/security-review-2026-08-02.md');
   const license = readText('LICENSE');
   const contributing = readText('CONTRIBUTING.md');
 
@@ -134,7 +134,7 @@ test('legal and support documents are present and do not overclaim affiliation',
   assert.match(support, /GitHub Issues/);
   assert.match(support, /info@mikesoft\.it/);
   assert.match(security, /Please do not report security vulnerabilities through public GitHub issues/i);
-  assert.match(security, /docs\/security-review-2026-08-01\.md/);
+  assert.match(security, /docs\/security-review-2026-08-02\.md/);
   assert.match(securityReview, /no unresolved critical, high, or medium severity findings/i);
   assert.match(securityReview, /SEC-001/);
   assert.match(license, /MIT License/);
@@ -145,13 +145,17 @@ test('package scripts use deterministic local tooling entry points', () => {
   const packageJson = readPackageJson();
 
   assert.equal(packageJson.scripts.typecheck, 'node ./node_modules/typescript/bin/tsc -p . --pretty false --noEmit');
-  assert.equal(packageJson.scripts.compile, 'node ./node_modules/typescript/bin/tsc -p . --pretty false');
+  assert.equal(packageJson.scripts.compile, 'npm run clean && node ./node_modules/typescript/bin/tsc -p . --pretty false');
   assert.equal(packageJson.scripts.test, 'npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js');
   assert.equal(packageJson.scripts.audit, 'npm audit --audit-level=high');
   assert.equal(packageJson.scripts['test:package'], 'node ./node_modules/@vscode/vsce/vsce ls');
   assert.equal(packageJson.scripts.check, 'npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js && npm run test:package');
   assert.equal(packageJson.scripts.package, 'node ./node_modules/@vscode/vsce/vsce package');
-  assert.equal(packageJson.scripts['vscode:prepublish'], 'npm run clean && npm run compile');
+  assert.equal(packageJson.scripts['vscode:prepublish'], 'npm run compile');
+  assert.deepEqual(packageJson.allowScripts, {
+    '@vscode/vsce-sign@2.0.9': true,
+    'keytar@7.9.0': true,
+  });
 });
 
 test('ignore rules keep generated, local, and engineering-only files out of artifacts', () => {

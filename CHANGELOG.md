@@ -15,10 +15,12 @@ All notable changes to this project will be documented in this file.
 
 - Moved per-launch resource ownership into a pure, VS Code-independent `createDisposableRegistry` helper in `src/command-utils.ts`, keeping `src/extension.ts` limited to VS Code API orchestration.
 - Named the shell-integration fallback delay as an explicit constant. The three-second timeout, terminal placement, and fresh-terminal-per-launch behavior are unchanged.
+- Made compilation clean `out/` first so local validation and packaging cannot retain stale JavaScript, and recorded the two reviewed VSCE install scripts as exact-version npm `allowScripts` entries.
 
 ### Documentation
 
 - Recorded the launch-resource ownership invariant in `AGENTS.md`.
+- Added the 2026-08-02 repository-grounded security review for the 0.1.10 candidate.
 
 ## 0.1.9
 

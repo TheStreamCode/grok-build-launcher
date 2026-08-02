@@ -148,7 +148,7 @@ npm run audit
 npm run check
 ```
 
-`npm run check` compiles the extension, runs unit and metadata tests, executes the VS Code extension-host smoke test, and inspects the package file list.
+`npm run check` starts from a clean `out/` directory, compiles the extension, runs unit and metadata tests, executes the VS Code extension-host smoke test, and inspects the package file list.
 
 The repository includes unit tests, metadata checks, VS Code integration smoke tests, and CI coverage for Windows, macOS, and Linux.
 

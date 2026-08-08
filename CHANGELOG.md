@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 0.1.11 — 2026-08-08
+
 ### Security
 
 - Updated the transitive development dependencies `fast-uri`, `js-yaml`, and `undici` to patched versions after new high-severity advisories affected the release-tool dependency graph. The packaged extension continues to have no runtime dependencies.

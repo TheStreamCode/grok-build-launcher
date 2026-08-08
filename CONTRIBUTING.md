@@ -60,3 +60,7 @@ Pull requests should:
 - update `README.md` and `CHANGELOG.md` when users are affected
 - avoid drive-by formatting or dependency changes
 - pass every required GitHub Actions check
+
+## Release Artifacts
+
+Maintainers build releases from a clean lockfile installation after `npm run audit`, `npm run typecheck`, `npm run check`, and `npm run package` pass. GitHub Releases include the versioned VSIX and its SHA-256 sidecar. Generated `*.vsix` and checksum files are release artifacts and must not be committed.

@@ -48,9 +48,9 @@ test('package metadata is public-ready and clearly unofficial', () => {
   assert.equal(packageJson.private, true);
   assert.equal(packageJson.type, 'commonjs');
   assert.equal(packageJson.displayName, 'Grok Build Launcher — Run Grok CLI in a Side Terminal');
-  assert.equal(packageJson.description, 'Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.');
+  assert.equal(packageJson.description, 'Launch Grok Build (xAI) CLI in a dedicated side terminal from VS Code, Cursor, or Windsurf. Local-first, cross-platform, and unofficial.');
   assert.equal(packageJson.publisher, 'mikesoft');
-  assert.equal(packageJson.version, '0.1.11');
+  assert.equal(packageJson.version, '0.1.12');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
   assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
@@ -105,6 +105,13 @@ test('README covers setup, missing CLI guidance, privacy, and affiliation discla
   assert.match(readme, /^# Grok Build Launcher$/m);
   assert.match(readme, /unofficial VS Code extension/i);
   assert.match(readme, /https:\/\/github\.com\/TheStreamCode\/grok-build-launcher/);
+  assert.match(readme, /media\/icon\.png/);
+  assert.match(readme, /## Install/);
+  assert.match(readme, /## Quick Start/);
+  assert.match(readme, /marketplace\.visualstudio\.com\/items\?itemName=mikesoft\.vscode-grok-build-launcher/);
+  assert.match(readme, /open-vsx\.org\/extension\/mikesoft\/vscode-grok-build-launcher/);
+  assert.match(readme, /github\.com\/TheStreamCode\/grok-build-launcher\/releases\/latest/);
+  assert.doesNotMatch(readme, /img\.shields\.io\/visual-studio-marketplace\/[iv]\//);
   assert.match(readme, /VS Code `\^1\.103\.0`/);
   assert.match(readme, /not affiliated with, endorsed by, sponsored by, or approved by xAI/i);
   assert.match(readme, /Grok, Grok Build, xAI, and related names/i);
@@ -166,6 +173,7 @@ test('ignore rules keep generated, local, and engineering-only files out of arti
   assert.ok(gitignoreEntries.includes('.vscode-test/'));
   assert.ok(gitignoreEntries.includes('.vsce/'));
   assert.ok(gitignoreEntries.includes('*.vsix'));
+  assert.ok(gitignoreEntries.includes('*.sha256'));
   assert.ok(gitignoreEntries.includes('out/'));
   assert.ok(!gitignoreEntries.includes('package-lock.json'));
   assert.ok(gitignoreEntries.includes('!.env.example'));
@@ -179,6 +187,7 @@ test('ignore rules keep generated, local, and engineering-only files out of arti
   assert.ok(vscodeignoreEntries.includes('AGENTS.md'));
   assert.ok(vscodeignoreEntries.includes('out/**/*.map'));
   assert.ok(vscodeignoreEntries.includes('package-lock.json'));
+  assert.ok(vscodeignoreEntries.includes('*.sha256'));
 });
 
 test('CI validates the extension with pinned actions on Windows, macOS, and Linux', () => {

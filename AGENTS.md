@@ -77,4 +77,4 @@ to a new package version without inspecting that version's install script.
 - Normal changes go through a pull request with required checks and review. Push directly to `main` only when the user explicitly requests it.
 - Before releasing, align the version in `package.json`, `package-lock.json`, `README.md`, `CHANGELOG.md`, `CITATION.cff`, issue templates, and metadata tests.
 - Inspect the VSIX file list and verify it excludes source maps, tests, engineering docs, GitHub metadata, local environment data, and development dependencies.
-- Do not commit generated VSIX files. Attach the built artifact and its SHA-256 digest to the matching GitHub release when publication is requested.
+- Do not commit generated VSIX or checksum files. Attach the built artifact, a `.sha256` sidecar, and the digest in the release notes to the matching GitHub release when publication is requested.

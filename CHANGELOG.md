@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 0.1.12 — 2026-08-08
+
+### Changed
+
+- Reorganized the README around installation, quick start, product benefits, trust boundaries, configuration, troubleshooting, and contribution paths.
+- Replaced retired Visual Studio Marketplace version and install-count badges with a stable installation badge, and added direct Marketplace, Open VSX, and latest GitHub Release actions.
+- Refined the extension summary shown in package metadata while preserving its independent, unofficial positioning.
+
+### Documentation
+
+- Added a professional hero using the existing original icon, a concise launch-flow overview, clearer editor compatibility, and an explicit related-project section.
+- Documented the downloadable SHA-256 sidecar shipped with GitHub Release artifacts.
+
 ## 0.1.11 — 2026-08-08
 
 ### Security

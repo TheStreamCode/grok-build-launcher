@@ -3,9 +3,9 @@
   "private": true,
   "type": "commonjs",
   "displayName": "Grok Build Launcher — Run Grok CLI in a Side Terminal",
-  "description": "Launch the Grok (xAI) AI coding agent CLI in a side terminal from your editor toolbar. Unofficial; works in VS Code, Cursor & Windsurf on Windows, macOS & Linux.",
+  "description": "Launch Grok Build (xAI) CLI in a dedicated side terminal from VS Code, Cursor, or Windsurf. Local-first, cross-platform, and unofficial.",
   "publisher": "mikesoft",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "repository": {
     "type": "git",
     "url": "https://github.com/TheStreamCode/grok-build-launcher.git"

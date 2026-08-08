@@ -29,3 +29,9 @@ Grok Build CLI is a separate third-party product with its own authentication, ne
 ## Security Reviews
 
 The latest repository-grounded review is available in [`docs/security-review-2026-08-08.md`](https://github.com/TheStreamCode/grok-build-launcher/blob/main/docs/security-review-2026-08-08.md). Treat dated reports as point-in-time assessments and verify the current code and dependency state before relying on them.
+
+## Release Integrity
+
+Official GitHub Releases attach the versioned VSIX and a matching `.sha256` sidecar. Verify a downloaded package with `Get-FileHash -Algorithm SHA256` on PowerShell or `sha256sum` on macOS and Linux, then compare the result with the sidecar before installing it manually.
+
+Marketplace and Open VSX packages are published through separate maintainer-controlled channels. Registry versions and GitHub Releases should be treated as distinct distribution states and verified independently.

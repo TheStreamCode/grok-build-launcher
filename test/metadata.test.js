@@ -125,7 +125,7 @@ test('legal and support documents are present and do not overclaim affiliation',
   const trademarks = readText('TRADEMARKS.md');
   const support = readText('SUPPORT.md');
   const security = readText('SECURITY.md');
-  const securityReview = readText('docs/security-review-2026-08-02.md');
+  const securityReview = readText('docs/security-review-2026-08-08.md');
   const license = readText('LICENSE');
   const contributing = readText('CONTRIBUTING.md');
 
@@ -134,9 +134,9 @@ test('legal and support documents are present and do not overclaim affiliation',
   assert.match(support, /GitHub Issues/);
   assert.match(support, /info@mikesoft\.it/);
   assert.match(security, /Please do not report security vulnerabilities through public GitHub issues/i);
-  assert.match(security, /docs\/security-review-2026-08-02\.md/);
-  assert.match(securityReview, /no unresolved critical, high, or medium severity findings/i);
-  assert.match(securityReview, /SEC-001/);
+  assert.match(security, /docs\/security-review-2026-08-08\.md/);
+  assert.match(securityReview, /no unresolved critical, high, or medium severity\s+findings/i);
+  assert.match(securityReview, /SEC-008/);
   assert.match(license, /MIT License/);
   assert.match(contributing, /Do not add official xAI or Grok logos/i);
 });
@@ -183,11 +183,16 @@ test('ignore rules keep generated, local, and engineering-only files out of arti
 
 test('CI validates the extension with pinned actions on Windows, macOS, and Linux', () => {
   const workflow = readText('.github/workflows/ci.yml');
+  const integrationRunner = readText('test/integration/runTest.js');
 
   assert.match(workflow, /^name: CI$/m);
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /macos-latest/);
+  assert.match(workflow, /name: validate \(\$\{\{ matrix\.os \}\}\)/);
+  assert.match(workflow, /vscodeVersion: 1\.103\.0/);
+  assert.match(workflow, /vscodeVersion: stable/);
+  assert.match(workflow, /VSCODE_TEST_VERSION: \$\{\{ matrix\.vscodeVersion \}\}/);
   assert.match(workflow, /concurrency:/);
   assert.match(workflow, /timeout-minutes: 20/);
   assert.match(workflow, /actions\/checkout@[0-9a-f]{40} # v7/);
@@ -197,6 +202,11 @@ test('CI validates the extension with pinned actions on Windows, macOS, and Linu
   assert.match(workflow, /npm ci/);
   assert.match(workflow, /npm run audit/);
   assert.match(workflow, /npm run check/);
+  assert.match(integrationRunner, /DEFAULT_VSCODE_TEST_VERSION = '1\.103\.0'/);
+  assert.match(integrationRunner, /process\.env\.VSCODE_TEST_VERSION\?\.trim\(\)/);
+  assert.match(integrationRunner, /process\.env\.VSCODE_TEST_CACHE_PATH\?\.trim\(\)/);
+  assert.match(integrationRunner, /version: vscodeVersion/);
+  assert.match(integrationRunner, /cachePath/);
 });
 
 test('GitHub contribution templates collect actionable and safe reports', () => {

@@ -16,15 +16,22 @@ concurrency:
 
 jobs:
   validate:
+    name: validate (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - windows-latest
-          - ubuntu-latest
-          - macos-latest
+        include:
+          - os: windows-latest
+            vscodeVersion: 1.103.0
+          - os: ubuntu-latest
+            vscodeVersion: stable
+          - os: macos-latest
+            vscodeVersion: 1.103.0
+
+    env:
+      VSCODE_TEST_VERSION: ${{ matrix.vscodeVersion }}
 
     steps:
       - name: Checkout repository

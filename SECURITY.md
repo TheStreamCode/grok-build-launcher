@@ -28,4 +28,4 @@ Grok Build CLI is a separate third-party product with its own authentication, ne
 
 ## Security Reviews
 
-The latest repository-grounded review is available in [`docs/security-review-2026-08-02.md`](https://github.com/TheStreamCode/grok-build-launcher/blob/main/docs/security-review-2026-08-02.md). Treat dated reports as point-in-time assessments and verify the current code and dependency state before relying on them.
+The latest repository-grounded review is available in [`docs/security-review-2026-08-08.md`](https://github.com/TheStreamCode/grok-build-launcher/blob/main/docs/security-review-2026-08-08.md). Treat dated reports as point-in-time assessments and verify the current code and dependency state before relying on them.

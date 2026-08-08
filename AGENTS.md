@@ -22,7 +22,7 @@ Review the script before using `npm approve-scripts`; dependency updates require
 - `npm run compile`: clean stale output, then compile TypeScript into `out/`.
 - `npm run typecheck`: run strict TypeScript checks without emitting files.
 - `npm run test:unit`: compile and run Node unit and metadata tests.
-- `npm run test:integration`: compile and run the VS Code extension-host smoke test.
+- `npm run test:integration`: compile and run the VS Code extension-host smoke test against VS Code 1.103.0 by default. Set `VSCODE_TEST_VERSION=stable` to exercise the latest stable runtime and `VSCODE_TEST_CACHE_PATH` when an isolated download cache is required.
 - `npm run audit`: fail on known high- or critical-severity dependency vulnerabilities.
 - `npm run test:package`: inspect the files that would be included in the VSIX.
 - `npm run check`: compile, run all tests, and inspect package contents.
@@ -67,6 +67,7 @@ to a new package version without inspecting that version's install script.
 - Avoid broad refactors, drive-by formatting, and new runtime dependencies for behavior that the VS Code or Node standard APIs already provide.
 - Add or update regression tests for every behavior change. Metadata tests should validate security-sensitive manifest settings and package boundaries.
 - Keep tests deterministic and cross-platform. Do not assume a specific user shell, filesystem root, or installed Grok CLI.
+- Keep the default extension-host test version aligned with the minimum version in `engines.vscode`; use CI to exercise both the minimum and latest stable VS Code runtimes without renaming required checks.
 - Update `README.md`, `CHANGELOG.md`, `SECURITY.md`, and related tests when user-visible or security behavior changes.
 
 ## GitHub And Release Discipline

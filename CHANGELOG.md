@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Security
+
+- Updated the transitive development dependencies `fast-uri`, `js-yaml`, and `undici` to patched versions after new high-severity advisories affected the release-tool dependency graph. The packaged extension continues to have no runtime dependencies.
+
+### Changed
+
+- Made the VS Code extension-host smoke test deterministic by targeting the declared 1.103.0 compatibility floor by default while allowing CI to exercise the latest stable runtime.
+- Preserved the existing required CI check names while validating the minimum supported VS Code version on Windows and macOS and the latest stable version on Linux.
+
+### Documentation
+
+- Added the 2026-08-08 repository-grounded security review and refreshed the security-policy pointer.
+
 ## 0.1.10 — 2026-08-02
 
 ### Fixed

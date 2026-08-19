@@ -213,4 +213,4 @@ This repository contains only extension code and original launcher assets. It do
 
 ## License
 
-Released under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).

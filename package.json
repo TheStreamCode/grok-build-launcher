@@ -6,10 +6,7 @@
   "description": "Launch Grok Build (xAI) CLI in a dedicated side terminal from VS Code, Cursor, or Windsurf. Local-first, cross-platform, and unofficial.",
   "publisher": "mikesoft",
   "version": "0.1.12",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/TheStreamCode/grok-build-launcher.git"
-  },
+  "repository": "github:TheStreamCode/grok-build-launcher",
   "author": {
     "name": "Michael Gasperini",
     "url": "https://mikesoft.it"
@@ -17,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/TheStreamCode/grok-build-launcher/issues"
   },
-  "homepage": "https://mikesoft.it",
+  "homepage": "https://marketplace.visualstudio.com/items?itemName=mikesoft.vscode-grok-build-launcher",
   "sponsor": {
     "url": "https://github.com/sponsors/TheStreamCode"
   },
@@ -123,11 +120,10 @@
     "@types/node": "^22.20.1",
     "@types/vscode": "1.103.0",
     "@vscode/test-electron": "^3.1.0",
-    "@vscode/vsce": "^3.9.2",
+    "@vscode/vsce": "^4.0.0",
     "typescript": "^7.0.2"
   },
   "allowScripts": {
-    "@vscode/vsce-sign@2.0.9": true,
-    "keytar@7.9.0": true
+    "@vscode/vsce-sign@2.1.0": true
   }
 }

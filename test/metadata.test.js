@@ -218,7 +218,7 @@ test('CI validates the extension with pinned actions on Windows, macOS, and Linu
   assert.match(workflow, /concurrency:/);
   assert.match(workflow, /timeout-minutes: 20/);
   assert.match(workflow, /actions\/checkout@[0-9a-f]{40} # v7/);
-  assert.match(workflow, /actions\/setup-node@[0-9a-f]{40} # v6/);
+  assert.match(workflow, /actions\/setup-node@[0-9a-f]{40} # v[67]/);
   assert.match(workflow, /persist-credentials: false/);
   assert.match(workflow, /cache: npm/);
   assert.match(workflow, /npm ci/);

@@ -117,7 +117,7 @@
     "check": "npm run compile && node --test test/*.test.js && node ./test/integration/runTest.js && npm run test:package"
   },
   "devDependencies": {
-    "@types/node": "^26.6.2",
+    "@types/node": "^26.6.5",
     "@types/vscode": "1.103.0",
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^4.0.0",

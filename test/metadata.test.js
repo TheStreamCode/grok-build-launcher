@@ -53,8 +53,9 @@ test('package metadata is public-ready and clearly unofficial', () => {
   assert.equal(packageJson.version, '0.1.12');
   assert.equal(packageJson.icon, 'media/icon.png');
   assert.equal(packageJson.license, 'MIT');
-  assert.equal(packageJson.repository.url, 'https://github.com/TheStreamCode/grok-build-launcher.git');
+  assert.equal(packageJson.repository, 'github:TheStreamCode/grok-build-launcher');
   assert.equal(packageJson.bugs.url, 'https://github.com/TheStreamCode/grok-build-launcher/issues');
+  assert.equal(packageJson.homepage, 'https://marketplace.visualstudio.com/items?itemName=mikesoft.vscode-grok-build-launcher');
   assert.equal(packageJson.engines.vscode, '^1.103.0');
   assert.equal(packageJson.devDependencies['@types/vscode'], '1.103.0');
   assert.equal(packageJson.capabilities.untrustedWorkspaces.supported, 'limited');
@@ -99,33 +100,46 @@ test('extension assets are original packaged assets on expected paths', () => {
   assert.doesNotMatch(commandIconMarkup, /xai|x\.ai|grok/i);
 });
 
-test('README covers setup, missing CLI guidance, privacy, and affiliation disclaimer', () => {
+test('README follows the shared section order and covers setup, guidance, privacy, and affiliation disclaimer', () => {
   const readme = readText('README.md');
+  const headings = [...readme.matchAll(/^## (.+)$/gm)].map((match) => match[1]);
 
   assert.match(readme, /^# Grok Build Launcher$/m);
+  assert.deepEqual(headings, [
+    'Install',
+    'Quick start',
+    'Features',
+    'Requirements',
+    'Configuration',
+    'Privacy and security',
+    'Troubleshooting',
+    'Development',
+    'Support',
+    'Contributing',
+    'License',
+  ]);
+  assert.match(readme, /actions\/workflows\/ci\.yml\/badge\.svg/);
+  assert.match(readme, /License-MIT/);
+  assert.match(readme, /Maintained by \[Michael Gasperini \(Mikesoft\)\]\(https:\/\/mikesoft\.it\)/);
   assert.match(readme, /unofficial VS Code extension/i);
   assert.match(readme, /https:\/\/github\.com\/TheStreamCode\/grok-build-launcher/);
   assert.match(readme, /media\/icon\.png/);
-  assert.match(readme, /## Install/);
-  assert.match(readme, /## Quick Start/);
   assert.match(readme, /marketplace\.visualstudio\.com\/items\?itemName=mikesoft\.vscode-grok-build-launcher/);
   assert.match(readme, /open-vsx\.org\/extension\/mikesoft\/vscode-grok-build-launcher/);
   assert.match(readme, /github\.com\/TheStreamCode\/grok-build-launcher\/releases\/latest/);
-  assert.doesNotMatch(readme, /img\.shields\.io\/visual-studio-marketplace\/[iv]\//);
   assert.match(readme, /VS Code `\^1\.103\.0`/);
   assert.match(readme, /not affiliated with, endorsed by, sponsored by, or approved by xAI/i);
   assert.match(readme, /Grok, Grok Build, xAI, and related names/i);
-  assert.match(readme, /## Features/);
-  assert.match(readme, /## Missing CLI Guidance/);
   assert.match(readme, /https:\/\/docs\.x\.ai\/build\/overview/);
   assert.match(readme, /does not download or execute installers/i);
   assert.match(readme, /does not collect telemetry, analytics, or personal data/i);
-  assert.match(readme, /## Build And Deployment/);
   assert.match(readme, /does not require or read runtime environment variables/i);
   assert.match(readme, /npm run typecheck/);
   assert.match(readme, /npm run audit/);
   assert.match(readme, /npm run package/);
   assert.match(readme, /npm run check/);
+  assert.doesNotMatch(readme, /Current documented release/);
+  assert.doesNotMatch(readme, /^## Build And Deployment$/m);
 });
 
 test('legal and support documents are present and do not overclaim affiliation', () => {
@@ -160,8 +174,7 @@ test('package scripts use deterministic local tooling entry points', () => {
   assert.equal(packageJson.scripts.package, 'node ./node_modules/@vscode/vsce/vsce package');
   assert.equal(packageJson.scripts['vscode:prepublish'], 'npm run compile');
   assert.deepEqual(packageJson.allowScripts, {
-    '@vscode/vsce-sign@2.0.9': true,
-    'keytar@7.9.0': true,
+    '@vscode/vsce-sign@2.1.0': true,
   });
 });
 
@@ -223,7 +236,7 @@ test('GitHub contribution templates collect actionable and safe reports', () => 
   const bugReport = readText('.github/ISSUE_TEMPLATE/bug_report.yml');
   const featureRequest = readText('.github/ISSUE_TEMPLATE/feature_request.yml');
   const issueConfig = readText('.github/ISSUE_TEMPLATE/config.yml');
-  const pullRequestTemplate = readText('.github/pull_request_template.md');
+  const pullRequestTemplate = readText('.github/PULL_REQUEST_TEMPLATE.md');
 
   assert.match(codeowners, /^\* @TheStreamCode$/m);
   assert.match(bugReport, /Reproduction steps/);
@@ -254,7 +267,8 @@ test('the released version is consistent across manifest, lockfile, docs, and ci
   assert.equal(lockfile.version, version);
   assert.equal(lockfile.packages[''].version, version);
   assert.ok(readLines('CHANGELOG.md').some((line) => line === `## ${version}` || line.startsWith(`## ${version} `)));
-  assert.ok(readText('README.md').includes(`Current documented release: \`${version}\``));
+  assert.doesNotMatch(readText('README.md'), /Current documented release/);
+  assert.match(readText('README.md'), /releases\/latest/);
   assert.ok(readLines('CITATION.cff').includes(`version: "${version}"`));
   assert.ok(readText('.github/ISSUE_TEMPLATE/bug_report.yml').includes(`placeholder: "${version}"`));
 });

@@ -1,6 +1,6 @@
 # Support
 
-Use GitHub Issues for reproducible bugs, compatibility problems, and feature requests: https://github.com/TheStreamCode/grok-build-launcher/issues.
+Use [GitHub Issues](https://github.com/TheStreamCode/grok-build-launcher/issues) for reproducible bugs, compatibility problems, and feature requests. Usage questions and workflows belong in [GitHub Discussions](https://github.com/TheStreamCode/grok-build-launcher/discussions).
 
 Please include:
 
@@ -11,6 +11,6 @@ Please include:
 - Whether `grok` works in a regular VS Code integrated terminal
 - Relevant terminal output, without secrets or authentication tokens
 
-For non-public support questions, contact the maintainer at `info@mikesoft.it` or through https://mikesoft.it.
+For non-public support questions, contact the maintainer at `info@mikesoft.it` or through [mikesoft.it](https://mikesoft.it).
 
 This project is maintained independently and cannot provide official xAI or Grok account support.

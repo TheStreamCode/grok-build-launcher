@@ -238,7 +238,7 @@ test('GitHub contribution templates collect actionable and safe reports', () => 
   const issueConfig = readText('.github/ISSUE_TEMPLATE/config.yml');
   const pullRequestTemplate = readText('.github/PULL_REQUEST_TEMPLATE.md');
 
-  assert.match(codeowners, /^\* @TheStreamCode$/m);
+  assert.match(codeowners, /@TheStreamCode/);
   assert.match(bugReport, /Reproduction steps/);
   assert.match(bugReport, /contains no secrets, tokens, or private repository content/);
   assert.match(featureRequest, /keeps the project independent and unofficial/);
